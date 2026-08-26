@@ -2,55 +2,249 @@
 <link rel="apple-touch-icon" href="icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0f172a">
+<meta name="theme-color" content="#000000">
 
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Julieta App</title>
-&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
-&lt;script src="https://unpkg.com/lucide@latest"&gt;&lt;/script&gt;
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
-body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; }
-.card-vencido { background-color: #fef2f2; border-color: #fecaca; }
-.card-emdia { background-color: #f0fdf4; border-color: #bbf7d0; }
-.modal-overlay { background-color: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
-html, body { overflow-x: hidden; position: fixed; width: 100%; height: 100%; overflow-y: auto; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicativo Julieta</title>
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Julieta App</title>
+    
+    <!-- Configurações de PWA para Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        .card-vencido { background-color: #fef2f2; border-color: #fecaca; }
+        .card-emdia { background-color: #f0fdf4; border-color: #bbf7d0; }
+        .modal-overlay { background-color: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
+        
+        /* Ajuste para evitar scroll elástico no iOS/Android */
+        html, body { 
+            overflow-x: hidden; 
+            position: fixed; 
+            width: 100%; 
+            height: 100%; 
+            overflow-y: auto; 
+        }
+    </style>
 </head>
 <body class="bg-slate-50 text-slate-900 pb-10">
 
-<header class="bg-slate-900 text-white p-5 shadow-lg sticky top-0 z-10 rounded-b-3xl">
-<div class="max-w-5xl mx-auto flex items-center justify-between">
-<div class="flex items-center gap-3">
-<div class="bg-blue-500 p-2 rounded-lg">
-<i data-lucide="refresh-cw" class="text-white" style="width:20px"></i></div>
-<div>
-<h1 class="text-lg font-bold leading-tight">JULIETA APP</h1>
-<p class="text-slate-400 text-[10px] uppercase tracking-widest">Gestão de Preventivas</p>
-</div>
-</div>
-<div id="stats-header" class="flex gap-2 text-[10px] font-bold uppercase"></div>
-</div>
-</header>
+    <!-- Header Estilo App -->
+    <header class="bg-slate-900 text-white p-5 shadow-lg sticky top-0 z-10 rounded-b-3xl">
+        <div class="max-w-5xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-500 p-2 rounded-lg">
+                    <i data-lucide="refresh-cw" class="text-white" style="width:20px"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold leading-tight">JULIETA APP</h1>
+                    <p class="text-slate-400 text-[10px] uppercase tracking-widest">Gestão de Preventivas</p>
+                </div>
+            </div>
+            <div id="stats-header" class="flex gap-2 text-[10px] font-bold uppercase">
+                <!-- Stats via JS -->
+            </div>
+        </div>
+    </header>
 
-<main class="max-w-5xl mx-auto p-4 space-y-4">
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-<div class="relative">
-<i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style="width:18px"></i>
-<input
-type="text"
-id="searchInput"
-placeholder="Buscar coluna ou frota..."
-class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-2xl transition-all outline-none shadow-sm text-sm"
-/>
-</div>
+    <main class="max-w-5xl mx-auto p-4 space-y-4">
+        
+        <!-- Barra de Busca e Filtro Estilo Mobile -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="relative">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style="width:18px"></i>
+                <input 
+                    type="text" 
+                    id="searchInput"
+                    placeholder="Buscar coluna..." 
+                    class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-2xl transition-all outline-none shadow-sm text-sm"
+                />
+            </div>
 
-<div class="relative">
-<i data-lucide="filter" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style="width:18px"></i>
-<select
-id="filterStatus"
-class="w-full pl-10 pr-4 py-3 bg-white
+            <div class="relative">
+                <i data-lucide="filter" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style="width:18px"></i>
+                <select 
+                    id="filterStatus"
+                    class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-2xl transition-all outline-none shadow-sm text-sm appearance-none cursor-pointer"
+                >
+                    <option value="all">Todos os Status</option>
+                    <option value="emdia">Apenas Em Dia</option>
+                    <option value="vencida">Apenas Vencidas</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Grid de Colunas -->
+        <div id="julietaGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            <!-- Cards via JS -->
+        </div>
+    </main>
+
+    <!-- Modal de Atualização Estilo Bottom Sheet (Mobile) -->
+    <div id="updateModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity duration-300">
+        <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom duration-300">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800">Atualizar Coluna</h3>
+                    <p class="text-blue-600 font-bold text-2xl" id="modalColId"></p>
+                </div>
+                <button onclick="closeModal()" class="p-2 bg-slate-100 rounded-full text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" style="width:20px"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Data da Revisão</label>
+                    <input 
+                        type="date" 
+                        id="newDateInput" 
+                        class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold"
+                    />
+                </div>
+                <button 
+                    onclick="saveDate()" 
+                    class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-blue-200"
+                >
+                    <i data-lucide="check" style="width:20px"></i> Confirmar Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const REFERENCE_DATE = new Date('2026-08-26T00:00:00');
+
+        const defaultData = {
+            1: '2026-08-18', 2: '2026-08-10', 3: '2026-08-03', 4: '2026-08-13', 5: '2026-08-14',
+            6: '2026-08-19', 7: '2026-08-15', 8: '2026-08-10', 9: '2026-08-14', 10: '2026-08-12',
+            11: '2026-08-17', 12: '2026-08-08', 13: '2026-07-31', 14: '2026-08-18', 15: '2026-08-25',
+            16: '2026-08-11', 17: '2026-08-05', 18: '2026-08-11', 19: '2026-08-19', 20: '2026-08-14',
+            21: '2026-07-30', 22: '2026-08-17', 23: '2026-08-19', 24: '2026-07-07', 25: '2026-08-24',
+            26: '2026-08-17', 27: '2026-07-27', 28: '2026-08-15', 29: '2026-08-18', 30: '2026-08-17',
+            31: '2026-08-21', 32: '2026-07-31', 33: '2026-07-07', 34: '2026-08-18', 35: '2026-08-13',
+            36: '2026-08-20', 37: '2026-08-04', 38: '2026-08-20', 39: '2026-08-11', 40: '2026-08-20',
+            41: '2026-08-21', 42: '2026-08-12', 43: '2026-08-21', 44: '2026-07-23', 45: '2026-07-06',
+            46: '2026-08-21', 47: '2026-08-22', 48: '2026-08-21', 49: '2026-08-10', 50: '2026-08-24',
+            51: '2026-08-22', 52: '2026-07-03', 53: '2026-08-04', 54: '2026-08-22',
+        };
+
+        // Tenta carregar do localStorage para persistir os dados no celular
+        let currentData = JSON.parse(localStorage.getItem('julieta_app_data')) || defaultData;
+        let activeCol = null;
+
+        function calculateDays(dateStr) {
+            const revDate = new Date(dateStr + 'T00:00:00');
+            const diffTime = Math.abs(REFERENCE_DATE - revDate);
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+
+        function formatDate(dateStr) {
+            const [year, month, day] = dateStr.split('-');
+            return `${day}/${month}/${year}`;
+        }
+
+        function openModal(colId) {
+            activeCol = colId;
+            document.getElementById('modalColId').innerText = colId;
+            document.getElementById('newDateInput').value = currentData[colId];
+            document.getElementById('updateModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('updateModal').classList.add('hidden');
+            activeCol = null;
+        }
+
+        function saveDate() {
+            const newDate = document.getElementById('newDateInput').value;
+            if (newDate && activeCol) {
+                currentData[activeCol] = newDate;
+                localStorage.setItem('julieta_app_data', JSON.stringify(currentData));
+                closeModal();
+                render();
+            }
+        }
+
+        function render() {
+            const grid = document.getElementById('julietaGrid');
+            const search = document.getElementById('searchInput').value;
+            const filter = document.getElementById('filterStatus').value;
+            const statsHeader = document.getElementById('stats-header');
+            
+            grid.innerHTML = '';
+            let countEmDia = 0;
+            let countVencida = 0;
+
+            for (let i = 1; i <= 54; i++) {
+                const dateStr = currentData[i];
+                if (!dateStr) continue;
+
+                const days = calculateDays(dateStr);
+                const status = days > 10 ? 'vencida' : 'emdia';
+                
+                if (status === 'emdia') countEmDia++; else countVencida++;
+
+                if (search && !i.toString().includes(search)) continue;
+                if (filter !== 'all' && filter !== status) continue;
+
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-2xl border-2 transition-all active:scale-95 cursor-pointer ${status === 'emdia' ? 'card-emdia' : 'card-vencido'}`;
+                card.onclick = () => openModal(i);
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase">Col</span>
+                        <i data-lucide="${status === 'emdia' ? 'check-circle' : 'alert-circle'}" 
+                           class="${status === 'emdia' ? 'text-green-500' : 'text-red-500'}" 
+                           style="width:14px"></i>
+                    </div>
+                    <div class="text-2xl font-black text-slate-800 mb-2">${i}</div>
+                    <div class="space-y-1">
+                        <div class="text-[10px] text-slate-500 font-medium flex items-center gap-1">
+                            <i data-lucide="calendar" style="width:10px"></i> ${formatDate(dateStr)}
+                        </div>
+                        <div class="text-[10px] font-bold px-2 py-0.5 rounded-full inline-block ${
+                            status === 'emdia' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'
+                        }">
+                            ${days} dias
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            }
+
+            statsHeader.innerHTML = `
+                <span class="text-green-400 flex items-center gap-1"><i data-lucide="check" style="width:10px"></i> ${countEmDia}</span>
+                <span class="text-red-400 flex items-center gap-1"><i data-lucide="x" style="width:10px"></i> ${countVencida}</span>
+            `;
+            
+            lucide.createIcons();
+        }
+
+        document.getElementById('searchInput').addEventListener('input', render);
+        document.getElementById('filterStatus').addEventListener('change', render);
+
+        render();
+    </script>
+</body>
+</html>
