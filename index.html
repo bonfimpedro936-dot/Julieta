@@ -1,99 +1,147 @@
-<link rel="icon" type="image/png" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0f172a">
-
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Julieta App</title>
-&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
-&lt;script src="https://unpkg.com/lucide@latest"&gt;&lt;/script&gt;
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
-body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; }
-.card-vencido { background-color: #fef2f2; border-color: #fecaca; }
-.card-emdia { background-color: #f0fdf4; border-color: #bbf7d0; }
-.modal-overlay { background-color: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
-html, body { overflow-x: hidden; position: fixed; width: 100%; height: 100%; overflow-y: auto; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Julieta - Controle de Frotas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: sans-serif; }
+        .card-vencido { background-color: #7f1d1d; border: 2px solid #ef4444; }
+        .card-ok { background-color: #064e3b; border: 2px solid #10b981; }
+        .card-alerta { background-color: #78350f; border: 2px solid #f59e0b; }
+        .card-vazio { background-color: #1e293b; border: 2px solid #475569; }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900 pb-10">
+<body class="p-4 pb-20">
 
-<header class="bg-slate-900 text-white p-5 shadow-lg sticky top-0 z-10 rounded-b-3xl">
-<div class="max-w-5xl mx-auto flex items-center justify-between">
-<div class="flex items-center gap-3">
-<div class="bg-blue-500 p-2 rounded-lg">
-<i data-lucide="refresh-cw" class="text-white" style="width:20px"></i>
-</div>
-<div>
-<h1 class="text-lg font-bold leading-tight">JULIETA APP</h1>
-<p class="text-slate-400 text-[10px] uppercase tracking-widest">Gestão de Preventivas</p>
-</div>
-</div>
-<div id="stats-header" class="flex gap-2 text-[10px] font-bold uppercase"></div>
-</div>
-</header>
+    <div class="max-w-md mx-auto">
+        <header class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold flex items-center gap-2">
+                <i data-lucide="truck"></i> Julieta App
+            </h1>
+            <div id="current-date" class="text-xs text-slate-400"></div>
+        </header>
 
-<main class="max-w-5xl mx-auto p-4 space-y-4">
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-<div class="relative">
-<i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style="width:18px"></i>
-<input type="text" id="searchInput" placeholder="Buscar coluna ou frota..." class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-2xl transition-all outline-none shadow-sm text-sm" />
-</div>
-<div class="relative">
-<i data-lucide="filter" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style="width:18px"></i>
-<select id="filterStatus" class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-2xl transition-all outline-none shadow-sm text-sm appearance-none cursor-pointer">
-<option value="all">Todos os Status</option>
-<option value="emdia">Apenas Em Dia</option>
-<option value="vencida">Apenas Vencidas</option>
-</select>
-</div>
-</div>
-<div id="julietaGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3"></div>
-</main>
+        <div class="relative mb-6">
+            <i data-lucide="search" class="absolute left-3 top-3 text-slate-400 w-5 h-5"></i>
+            <input type="text" id="search" placeholder="Buscar frota ou coluna..." 
+                class="w-full bg-slate-800 border border-slate-700 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
 
-<div id="updateModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity duration-300">
-<div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom duration-300">
-<div class="p-6 border-b border-slate-100 flex justify-between items-center">
-<div>
-<h3 class="text-xl font-bold text-slate-800">Atualizar Coluna</h3>
-<p class="text-blue-600 font-bold text-2xl" id="modalColId"></p>
-</div>
-<button onclick="closeModal()" class="p-2 bg-slate-100 rounded-full text-slate-400 hover:text-slate-600">
-<i data-lucide="x" style="width:20px"></i>
-</button>
-</div>
-<div class="p-6 space-y-6">
-<div>
-<label class="block text-xs font-bold text-slate-400 uppercase mb-2">Data da Revisão</label>
-<input type="date" id="newDateInput" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold" />
-</div>
-<button onclick="saveDate()" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-blue-200">
-<i data-lucide="check" style="width:20px"></i> Confirmar Data
-</button>
-</div>
-</div>
-</div>
+        <div id="grid-frotas" class="grid grid-cols-2 gap-3"></div>
+    </div>
 
-<script>
-const REFERENCE_DATE = new Date('2026-08-26T00:00:00');
+    <div id="modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-900 border border-slate-700 p-6 rounded-2xl w-full max-w-sm">
+            <h2 class="text-xl font-bold mb-4" id="modal-title">Editar Data</h2>
+            <input type="date" id="date-input" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 mb-4 text-white">
+            <div class="flex gap-3">
+                <button onclick="closeModal()" class="flex-1 py-3 rounded-lg bg-slate-700 font-medium">Cancelar</button>
+                <button onclick="saveDate()" class="flex-1 py-3 rounded-lg bg-blue-600 font-medium">Salvar</button>
+            </div>
+        </div>
+    </div>
 
+    <script>
+        const fleetData = {
+            1: '230001-231011', 2: '230002-231006', 3: '230003-231015', 4: '230004-231013', 5: '230005-231014',
+            6: '230006-231010', 7: '230007-231016', 8: '230008-231002', 9: '230009-231012', 10: '230010-231003',
+            11: '230011-231009', 12: '230012-231004', 13: '230013-231007', 14: '230014-231008', 15: '230015-231005',
+            16: '230016-231001', 17: '230017-231017', 18: '230018-231026', 19: '230019-231024', 20: '230020-231027',
+            21: '230021-231018', 22: '230022-231020', 23: '230023-231021', 24: '230024-231025', 25: '230025-231028',
+            26: '230026-231029', 27: '230027-231022', 28: '230028-231023', 29: '230029-231019', 30: '230089-231072',
+            31: '230051-231050', 32: '230088-231074', 33: '230053-231051', 34: '230087-231073', 35: '230083-231069',
+            36: '230082-231067', 37: '230084-231071', 38: '230077-231065', 39: '230076-231068', 40: '230046-231045',
+            41: '230049-231048', 42: '230047-231046', 43: '230050-231049', 44: '230048-231047', 45: '230093-231120',
+            46: '230091-231077', 47: '230094-231078', 48: '230092-231079', 49: '230052-231052', 50: '230055-231053',
+            51: '230127-231115', 52: '230126-231117', 53: '230125-231114', 54: '230128-231116', 55: '230054-231054'
+        };
 
-const fleetData = {
-    1: '230001-231011', 2: '230002-231006', 3: '230003-231015', 4: '230004-231013', 5: '230005-231014',
-    6: '230006-231010', 7: '230007-231016', 8: '230008-231002', 9: '230009-231012', 10: '230010-231003',
-    11: '230011-231009', 12: '230012-231004', 13: '230013-231007', 14: '230014-231008', 15: '230015-231005',
-    16: '230016-231001', 17: '230017-231017', 18: '230018-231026', 19: '230019-231024', 20: '230020-231027',
-    21: '230021-231018', 22: '230022-231020', 23: '230023-231021', 24: '230024-231025', 25: '230025-231028',
-    26: '230026-231029', 27: '230027-231022', 28: '230028-231023', 29: '230029-231019', 30: '230089-231072',
-    31: '230051-231050', 32: '230088-231074', 33: '230053-231051', 34: '230087-231073', 35: '230083-231069',
-    36: '230082-231067', 37: '230084-231071', 38: '230077-231065', 39: '230076-231068', 40: '230046-231045',
-    41: '230049-231048', 42: '230047-231046', 43: '230050-231049', 44: '230048-231047', 45: '230093-231120',
-    46: '230091-231077', 47: '230094-231078', 48: '230092-231079', 49: '230052-231052', 50: '230055-231053',
-    51: '230127-231115', 52: '230126-231117', 53: '230125-231114', 54: '230128-231116', 55: '230054-231054'
-};
-  
+        // Base de dados completa com as datas processadas das fotos
+        const initialDates = {
+            1: '2026-08-10', 2: '2026-08-12', 3: '2026-08-05', 4: '2026-08-15', 5: '2026-08-05',
+            6: '2026-08-11', 7: '2026-08-08', 8: '2026-08-02', 9: '2026-08-14', 10: '2026-07-23',
+            11: '2026-08-09', 12: '2026-08-04', 13: '2026-08-07', 14: '2026-08-08', 15: '2026-08-25',
+            16: '2026-08-01', 17: '2026-08-17', 18: '2026-08-26', 19: '2026-08-24', 20: '2026-08-27',
+            21: '2026-08-18', 22: '2026-08-12', 23: '2026-08-21', 24: '2026-08-25', 25: '2026-08-28',
+            26: '2026-08-29', 27: '2026-08-22', 28: '2026-08-23', 29: '2026-08-19', 30: '2026-08-10',
+            31: '2026-08-05', 32: '2026-08-08', 33: '2026-08-05', 34: '2026-08-07', 35: '2026-08-09',
+            36: '2026-08-07', 37: '2026-08-11', 38: '2026-08-20', 39: '2026-08-08', 40: '2026-08-24',
+            41: '2026-08-14', 42: '2026-08-06', 43: '2026-08-09', 44: '2026-08-07', 45: '2026-08-20',
+            46: '2026-08-17', 47: '2026-08-18', 48: '2026-08-19', 49: '2026-08-12', 50: '2026-08-13',
+            51: '2026-08-15', 52: '2026-08-17', 53: '2026-08-14', 54: '2026-08-16', 55: '2026-08-14'
+        };
+
+        let savedDates = { ...initialDates };
+        let currentEditingId = null;
+
+        function getStatusClass(dateStr) {
+            if (!dateStr) return 'card-vazio';
+            const date = new Date(dateStr + 'T00:00:00');
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            
+            const diffTime = today - date;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays > 10) return 'card-vencido'; 
+            if (diffDays > 5) return 'card-alerta';   
+            return 'card-ok';                          
+        }
+
+        function renderGrid(filter = '') {
+            const grid = document.getElementById('grid-frotas');
+            grid.innerHTML = '';
+
+            for (let i = 1; i <= 55; i++) {
+                const frota = fleetData[i];
+                if (filter && !frota.includes(filter) && i != filter) continue;
+
+                const date = savedDates[i] || '';
+                const statusClass = getStatusClass(date);
+                
+                const card = document.createElement('div');
+                card.className = `${statusClass} p-4 rounded-2xl cursor-pointer transition-all active:scale-95`;
+                card.onclick = () => openModal(i);
+                
+                card.innerHTML = `
+                    <div class="text-xs opacity-70 mb-1">Coluna ${i}</div>
+                    <div class="font-bold text-sm mb-2">${frota}</div>
+                    <div class="text-xs font-mono">${date ? date.split('-').reverse().join('/') : 'Sem data'}</div>
+                `;
+                grid.appendChild(card);
+            }
+        }
+
+        function openModal(id) {
+            currentEditingId = id;
+            document.getElementById('modal-title').innerText = `Coluna ${id} - ${fleetData[id]}`;
+            document.getElementById('date-input').value = savedDates[id] || '';
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        function saveDate() {
+            const date = document.getElementById('date-input').value;
+            if (date) {
+                savedDates[currentEditingId] = date;
+            } else {
+                delete savedDates[currentEditingId];
+            }
+            closeModal();
+            renderGrid(document.getElementById('search').value);
+        }
+
+        document.getElementById('search').oninput = (e) => renderGrid(e.target.value);
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('pt-BR');
+        
+        renderGrid();
+        lucide.createIcons();
+    </script>
+</body>
+</html>
