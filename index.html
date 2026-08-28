@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Julieta App - Controle de Frotas</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -12,20 +12,57 @@
 <script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
-.status-ok{background:#dcfce7;color:#166534}
-.status-warning{background:#fef9c3;color:#854d0e}
-.status-danger{background:#fee2e2;color:#991b1b}
-body{-webkit-tap-highlight-color:transparent}
-.status-filter{transition:.2s}
-@media(max-width:640px){
-.desktop-table{display:none}
-.mobile-card{display:block}
-header h1{font-size:18px}
-header span{display:none}
+.status-ok{
+    background-color:#dcfce7;
+    color:#166534;
 }
+
+.status-warning{
+    background-color:#fef9c3;
+    color:#854d0e;
+}
+
+.status-danger{
+    background-color:#fee2e2;
+    color:#991b1b;
+}
+
+body{
+    -webkit-tap-highlight-color:transparent;
+}
+
+.status-filter{
+    transition:all .2s ease;
+}
+
+@media(max-width:640px){
+
+    .desktop-table{
+        display:none;
+    }
+
+    .mobile-card{
+        display:block;
+    }
+
+    header h1{
+        font-size:18px;
+    }
+
+    header span{
+        display:none;
+    }
+}
+
 @media(min-width:641px){
-.mobile-card{display:none}
-.desktop-table{display:block}
+
+    .mobile-card{
+        display:none;
+    }
+
+    .desktop-table{
+        display:block;
+    }
 }
 </style>
 </head>
@@ -36,411 +73,744 @@ header span{display:none}
 
 <header class="flex justify-between items-center mb-5 bg-white p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-200">
 
-<div class="flex items-center gap-3 min-w-0">
-<div class="bg-blue-600 p-2 rounded-lg text-white shrink-0">
-<i data-lucide="truck"></i>
-</div>
+    <div class="flex items-center gap-3 min-w-0">
 
-<h1 class="text-lg sm:text-xl font-bold text-slate-800 truncate">
-Julieta App
-<span class="text-sm font-normal text-slate-500">| Gestão de Frotas</span>
-</h1>
-</div>
+        <div class="bg-blue-600 p-2 rounded-lg text-white shrink-0">
+            <i data-lucide="truck"></i>
+        </div>
 
-<div class="flex gap-2 shrink-0">
+        <h1 class="text-lg sm:text-xl font-bold text-slate-800 truncate">
 
-<button onclick="exportData()"
-class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 bg-slate-200 rounded-lg">
-<i data-lucide="download" class="w-4 h-4"></i>
-<span class="hidden sm:inline">Backup</span>
-</button>
+            Julieta App
 
-<button onclick="clearAllData()"
-class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg">
-<i data-lucide="trash-2" class="w-4 h-4"></i>
-<span class="hidden sm:inline">Limpar</span>
-</button>
+            <span class="text-sm font-normal text-slate-500">
+                | Gestão de Frotas
+            </span>
 
-</div>
+        </h1>
+
+    </div>
+
+    <div class="flex gap-2 shrink-0">
+
+        <button
+            onclick="exportData()"
+            class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 bg-slate-200 rounded-lg">
+
+            <i data-lucide="download" class="w-4 h-4"></i>
+
+            <span class="hidden sm:inline">
+                Backup
+            </span>
+
+        </button>
+
+        <button
+            onclick="clearAllData()"
+            class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg">
+
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+
+            <span class="hidden sm:inline">
+                Limpar
+            </span>
+
+        </button>
+
+    </div>
+
 </header>
+
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
 
-<div class="md:col-span-2 relative">
-<i data-lucide="search"
-class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"></i>
+    <div class="md:col-span-2 relative">
 
-<input id="searchInput"
-oninput="renderTable()"
-placeholder="Buscar coluna ou código..."
-class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+        <i
+            data-lucide="search"
+            class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5">
+        </i>
+
+        <input
+            type="text"
+            id="searchInput"
+            oninput="renderTable()"
+            placeholder="Buscar coluna ou código..."
+            class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm">
+
+    </div>
+
+
+    <button
+        onclick="openModal()"
+        class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow-md">
+
+        <i data-lucide="plus-circle" class="w-5 h-5"></i>
+
+        Nova Julieta
+
+    </button>
+
 </div>
 
-<button onclick="openModal()"
-class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-md">
-<i data-lucide="plus-circle" class="w-5 h-5"></i>
-Nova Julieta
-</button>
-
-</div>
 
 <div class="flex gap-2 mb-4 overflow-x-auto pb-1">
 
-<button onclick="setStatusFilter('all')" id="filter-all"
-class="status-filter whitespace-nowrap px-4 py-2 rounded-xl text-sm font-bold bg-blue-600 text-white">
-Todas
-</button>
+    <button
+        onclick="setStatusFilter('all')"
+        id="filter-all"
+        class="status-filter whitespace-nowrap px-4 py-2 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-sm">
 
-<button onclick="setStatusFilter('ok')" id="filter-ok"
-class="status-filter whitespace-nowrap px-4 py-2 rounded-xl text-sm font-bold bg-white text-slate-600 border">
-🟢 Em Dia
-</button>
+        Todas
 
-<button onclick="setStatusFilter('warning')" id="filter-warning"
-class="status-filter whitespace-nowrap px-4 py-2 rounded-xl text-sm font-bold bg-white text-slate-600 border">
-🟡 Atenção
-</button>
+    </button>
 
-<button onclick="setStatusFilter('danger')" id="filter-danger"
-class="status-filter whitespace-nowrap px-4 py-2 rounded-xl text-sm font-bold bg-white text-slate-600 border">
-🔴 Atrasadas
-</button>
+    <button
+        onclick="setStatusFilter('ok')"
+        id="filter-ok"
+        class="status-filter whitespace-nowrap px-4 py-2 rounded-xl text-sm font-bold bg-white text-slate-600 border border-slate-200">
+
+        🟢 Em Dia
+
+    </button>
+
+    <button
+        onclick="setStatusFilter('warning')"
+        id="filter-warning"
+        class="status-filter whitespace-nowrap px-4 py-2 rounded-xl text-sm font-bold bg-white text-slate-600 border border-slate-200">
+
+        🟡 Atenção
+
+    </button>
+
+    <button
+        onclick="setStatusFilter('danger')"
+        id="filter-danger"
+        class="status-filter whitespace-nowrap px-4 py-2 rounded-xl text-sm font-bold bg-white text-slate-600 border border-slate-200">
+
+        🔴 Atrasadas
+
+    </button>
 
 </div>
+
 
 <div class="mb-3 text-sm text-slate-500 px-1">
-Total de Julietas:
-<strong id="totalVehicles">0</strong>
-</div>
 
-<div class="desktop-table bg-white rounded-2xl shadow-sm border overflow-hidden">
-
-<div class="overflow-x-auto">
-<table class="w-full text-left border-collapse">
-
-<thead class="bg-slate-50 border-b">
-<tr>
-<th class="p-4 text-sm text-slate-600">Coluna</th>
-<th class="p-4 text-sm text-slate-600">Julieta / Código</th>
-<th class="p-4 text-sm text-slate-600">Status</th>
-<th class="p-4 text-sm text-slate-600">Data que passou</th>
-<th class="p-4 text-sm text-slate-600 text-right">Ações</th>
-</tr>
-</thead>
-
-<tbody id="tableBody" class="divide-y"></tbody>
-
-</table>
-</div>
-</div>
-
-<div id="mobileBody" class="mobile-card space-y-3"></div>
+    Total de Julietas:
+    <strong id="totalVehicles">0</strong>
 
 </div>
 
-<!-- MODAL -->
 
-<div id="modal"
-class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50 backdrop-blur-sm">
+<div class="desktop-table bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
 
-<div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
+    <div class="overflow-x-auto">
 
-<div class="p-5 border-b flex justify-between items-center">
+        <table class="w-full text-left border-collapse">
 
-<h3 id="modalTitle" class="text-lg font-bold text-slate-800">
-Nova Julieta
-</h3>
+            <thead class="bg-slate-50 border-b border-slate-200">
 
-<button onclick="closeModal()" class="text-slate-400">
-<i data-lucide="x"></i>
-</button>
+                <tr>
 
-</div>
+                    <th class="p-4 text-sm font-semibold text-slate-600">
+                        Coluna
+                    </th>
 
-<form id="vehicleForm" class="p-5 space-y-4">
+                    <th class="p-4 text-sm font-semibold text-slate-600">
+                        Julieta / Código
+                    </th>
 
-<input type="hidden" id="editIndex">
+                    <th class="p-4 text-sm font-semibold text-slate-600">
+                        Status
+                    </th>
 
-<div>
-<label class="block text-sm font-medium mb-1">Coluna</label>
-<input type="number" id="columnNumber" min="1" required
-class="w-full p-3 rounded-lg border outline-none">
-</div>
+                    <th class="p-4 text-sm font-semibold text-slate-600">
+                        Data que passou
+                    </th>
 
-<div>
-<label class="block text-sm font-medium mb-1">
-Código / Identificação
-</label>
+                    <th class="p-4 text-sm font-semibold text-slate-600 text-right">
+                        Ações
+                    </th>
 
-<input type="text" id="vehicleName" required
-class="w-full p-3 rounded-lg border outline-none">
-</div>
+                </tr>
 
-<div>
-<label class="block text-sm font-medium mb-1">
-Data que passou
-</label>
+            </thead>
 
-<input type="date" id="revisionDate"
-class="w-full p-3 rounded-lg border outline-none">
-</div>
+            <tbody
+                id="tableBody"
+                class="divide-y divide-slate-100">
+            </tbody>
 
-<div>
-<label class="block text-sm font-medium mb-1">
-Status
-</label>
+        </table>
 
-<select id="status"
-class="w-full p-3 rounded-lg border outline-none">
-
-<option value="ok">✅ Em Dia</option>
-<option value="warning">⚠️ Atenção</option>
-<option value="danger">❌ Atrasado</option>
-
-</select>
-</div>
-
-<div class="pt-3 flex gap-3">
-
-<button type="button" onclick="closeModal()"
-class="flex-1 px-4 py-3 text-slate-600 rounded-lg">
-Cancelar
-</button>
-
-<button type="submit"
-class="flex-1 px-4 py-3 bg-blue-600 text-white font-bold rounded-lg">
-Salvar
-</button>
+    </div>
 
 </div>
 
-</form>
+
+<div
+    id="mobileBody"
+    class="mobile-card space-y-3">
 </div>
+
 </div>
+
+
+<div
+    id="modal"
+    class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50 backdrop-blur-sm">
+
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
+
+        <div class="p-5 border-b border-slate-100 flex justify-between items-center">
+
+            <h3
+                id="modalTitle"
+                class="text-lg font-bold text-slate-800">
+
+                Nova Julieta
+
+            </h3>
+
+            <button
+                onclick="closeModal()"
+                class="text-slate-400 hover:text-slate-600">
+
+                <i data-lucide="x"></i>
+
+            </button>
+
+        </div>
+
+
+        <form
+            id="vehicleForm"
+            class="p-5 space-y-4">
+
+            <input
+                type="hidden"
+                id="editIndex">
+
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-1">
+                    Coluna
+                </label>
+
+                <input
+                    type="number"
+                    id="columnNumber"
+                    min="1"
+                    required
+                    class="w-full p-3 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
+
+            </div>
+
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-1">
+                    Código / Identificação
+                </label>
+
+                <input
+                    type="text"
+                    id="vehicleName"
+                    required
+                    class="w-full p-3 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
+
+            </div>
+
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-1">
+                    Data que passou
+                </label>
+
+                <input
+                    type="date"
+                    id="revisionDate"
+                    class="w-full p-3 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
+
+            </div>
+
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-1">
+                    Status
+                </label>
+
+                <select
+                    id="status"
+                    class="w-full p-3 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
+
+                    <option value="ok">
+                        ✅ Em Dia
+                    </option>
+
+                    <option value="warning">
+                        ⚠️ Atenção
+                    </option>
+
+                    <option value="danger">
+                        ❌ Atrasado
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="pt-3 flex gap-3">
+
+                <button
+                    type="button"
+                    onclick="closeModal()"
+                    class="flex-1 px-4 py-3 text-slate-600 font-medium hover:bg-slate-100 rounded-lg">
+
+                    Cancelar
+
+                </button>
+
+                <button
+                    type="submit"
+                    class="flex-1 px-4 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">
+
+                    Salvar
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
 
 <script>
 
 /* =========================================================
    FIREBASE
-========================================================= */
+   ========================================================= */
 
 const firebaseConfig = {
+
     apiKey: "AIzaSyCsJkA7XDcYv_8T_JMstQnDS71e7gR01Cw",
+
     authDomain: "julieta-app.firebaseapp.com",
+
     databaseURL: "https://julieta-app-default-rtdb.firebaseio.com",
+
     projectId: "julieta-app",
+
     storageBucket: "julieta-app.firebasestorage.app",
+
     messagingSenderId: "587760126355",
+
     appId: "1:587760126355:web:8aa50bd5e0e33c20448066"
+
 };
+
 
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
+
 const db = firebase.database();
+
 const dadosRef = db.ref("julieta_data");
 
 
 /* =========================================================
    55 JULIETAS
-========================================================= */
+   ========================================================= */
 
 const dadosJulietas = [
 
-[1,"230001 - 231011","2026-07-01"],
-[2,"230002 - 231006","2026-08-27"],
-[3,"230003 - 231015","2026-08-03"],
-[4,"230004 - 231013","2026-08-25"],
-[5,"230005 - 231014","2026-08-27"],
-[6,"230006 - 231010","2026-08-30"],
-[7,"230007 - 231016","2026-07-18"],
-[8,"230008 - 231002","2026-07-12"],
-[9,"230009 - 231012","2026-08-14"],
-[10,"230010 - 231003","2026-07-16"],
-[11,"230011 - 231009","2026-08-02"],
-[12,"230012 - 231004","2026-07-08"],
-[13,"230013 - 231007","2026-07-25"],
-[14,"230014 - 231008","2026-07-22"],
-[15,"230015 - 231005","2026-08-23"],
-[16,"230016 - 231001","2026-07-02"],
-[17,"230017 - 231017","2026-08-18"],
-[18,"230018 - 231026","2026-08-11"],
-[19,"230019 - 231024","2026-07-12"],
-[20,"230020 - 231027","2026-08-27"],
-[21,"230021 - 231018","2026-08-27"],
-[22,"230022 - 231020","2026-08-30"],
-[23,"230023 - 231021","2026-08-24"],
-[24,"230024 - 231025","2026-05-24"],
-[25,"230025 - 231028","2026-08-08"],
-[26,"230026 - 231029","2026-08-21"],
-[27,"230027 - 231022","2026-08-14"],
-[28,"230028 - 231023","2026-08-18"],
-[29,"230029 - 231019","2026-08-14"],
-[30,"230089 - 231072",""],
-[31,"230051 - 231050","2026-07-31"],
-[32,"230088 - 231074",""],
-[33,"230053 - 231051","2026-05-29"],
-[34,"230087 - 231073",""],
-[35,"230083 - 231069",""],
-[36,"230082 - 231067",""],
-[37,"230084 - 231071",""],
-[38,"230077 - 231065",""],
-[39,"230076 - 231068",""],
-[40,"230046 - 231045","2026-05-11"],
-[41,"230049 - 231048","2026-07-31"],
-[42,"230047 - 231046","2026-08-22"],
-[43,"230050 - 231049","2026-07-21"],
-[44,"230048 - 231047","2026-08-29"],
-[45,"230093 - 231120",""],
-[46,"230091 - 231077",""],
-[47,"230094 - 231078",""],
-[48,"230092 - 231079",""],
-[49,"230052 - 231052","2026-05-19"],
-[50,"230055 - 231053","2026-08-27"],
-[51,"230127 - 231115",""],
-[52,"230126 - 231117",""],
-[53,"230125 - 231114",""],
-[54,"230128 - 231116",""],
-[55,"230054 - 231054","2026-07-03"]
+    [1,  "230001 - 231011", "2026-07-01"],
+    [2,  "230002 - 231006", "2026-08-27"],
+    [3,  "230003 - 231015", "2026-08-03"],
+    [4,  "230004 - 231013", "2026-08-25"],
+    [5,  "230005 - 231014", "2026-08-27"],
+    [6,  "230006 - 231010", "2026-08-30"],
+    [7,  "230007 - 231016", "2026-07-18"],
+
+    [8,  "230008 - 231002", "2026-07-12"],
+    [9,  "230009 - 231012", "2026-08-14"],
+    [10, "230010 - 231003", "2026-07-16"],
+    [11, "230011 - 231009", "2026-08-02"],
+    [12, "230012 - 231004", "2026-07-08"],
+
+    [13, "230013 - 231007", "2026-07-25"],
+    [14, "230014 - 231008", "2026-07-22"],
+    [15, "230015 - 231005", "2026-08-23"],
+    [16, "230016 - 231001", "2026-07-02"],
+    [17, "230017 - 231017", "2026-08-18"],
+
+    [18, "230018 - 231026", "2026-08-11"],
+    [19, "230019 - 231024", "2026-07-12"],
+    [20, "230020 - 231027", "2026-08-27"],
+    [21, "230021 - 231018", "2026-08-27"],
+    [22, "230022 - 231020", "2026-08-30"],
+
+    [23, "230023 - 231021", "2026-08-24"],
+    [24, "230024 - 231025", "2026-05-24"],
+    [25, "230025 - 231028", "2026-08-08"],
+    [26, "230026 - 231029", "2026-08-21"],
+    [27, "230027 - 231022", "2026-08-14"],
+
+    [28, "230028 - 231023", "2026-08-18"],
+    [29, "230029 - 231019", "2026-08-14"],
+    [30, "230089 - 231072", ""],
+
+    [31, "230051 - 231050", "2026-07-31"],
+    [32, "230088 - 231074", ""],
+    [33, "230053 - 231051", "2026-05-29"],
+    [34, "230087 - 231073", ""],
+    [35, "230083 - 231069", ""],
+
+    [36, "230082 - 231067", ""],
+    [37, "230084 - 231071", ""],
+    [38, "230077 - 231065", ""],
+    [39, "230076 - 231068", ""],
+    [40, "230046 - 231045", "2026-05-11"],
+
+    [41, "230049 - 231048", "2026-07-31"],
+    [42, "230047 - 231046", "2026-08-22"],
+    [43, "230050 - 231049", "2026-07-21"],
+    [44, "230048 - 231047", "2026-08-29"],
+    [45, "230093 - 231120", ""],
+
+    [46, "230091 - 231077", ""],
+    [47, "230094 - 231078", ""],
+    [48, "230092 - 231079", ""],
+    [49, "230052 - 231052", "2026-05-19"],
+    [50, "230055 - 231053", "2026-08-27"],
+
+    [51, "230127 - 231115", ""],
+    [52, "230126 - 231117", ""],
+    [53, "230125 - 231114", ""],
+    [54, "230128 - 231116", ""],
+    [55, "230054 - 231054", "2026-07-03"]
 
 ];
 
 
 /* =========================================================
-   DADOS
-========================================================= */
+   DADOS INICIAIS
+   ========================================================= */
 
-let vehicles = [];
-let statusFilter = "all";
+const dadosIniciais = dadosJulietas.map(item => ({
 
+    column: item[0],
 
-const dadosIniciais = dadosJulietas.map(x => ({
-    column:x[0],
-    name:x[1],
-    date:x[2],
-    status:"ok"
+    name: item[1],
+
+    date: item[2],
+
+    status: "ok"
+
 }));
 
 
+let vehicles = [];
+
+let statusFilter = "all";
+
+let firebasePronto = false;
+
+
 /* =========================================================
-   LOGIN ANÔNIMO + SINCRONIZAÇÃO
-========================================================= */
+   INICIALIZAÇÃO
+   ========================================================= */
 
 auth.signInAnonymously()
-.then(() => {
 
-    return dadosRef.once("value");
+.then(async () => {
 
-})
-.then(snapshot => {
+    try {
 
-    if(!snapshot.exists()){
+        const snapshot =
+            await dadosRef.once("value");
 
-        return dadosRef.set(dadosIniciais);
+
+        /*
+         Se já existem dados no Firebase,
+         NÃO substitui pelos dados iniciais.
+        */
+
+        if (snapshot.exists()) {
+
+            const dados = snapshot.val();
+
+            if (Array.isArray(dados)) {
+
+                vehicles = dados;
+
+            } else {
+
+                vehicles = Object.values(dados || {});
+
+            }
+
+        }
+
+        /*
+         Firebase vazio:
+         primeiro tenta recuperar localStorage.
+         Se não existir, usa as 55 Julietas.
+        */
+
+        else {
+
+            let antigos = null;
+
+            try {
+
+                antigos =
+                    JSON.parse(
+                        localStorage.getItem("julieta_data")
+                    );
+
+            } catch (erro) {
+
+                antigos = null;
+
+            }
+
+
+            if (
+                Array.isArray(antigos) &&
+                antigos.length > 0
+            ) {
+
+                vehicles = antigos;
+
+            } else {
+
+                vehicles = dadosIniciais;
+
+            }
+
+
+            await dadosRef.set(vehicles);
+
+        }
+
+
+        firebasePronto = true;
+
+
+        localStorage.setItem(
+            "julieta_data",
+            JSON.stringify(vehicles)
+        );
+
+
+        renderTable();
+
+
+        /*
+         SINCRONIZAÇÃO EM TEMPO REAL
+
+         Se mudar em um aparelho,
+         os outros recebem automaticamente.
+        */
+
+        dadosRef.on("value", snapshot => {
+
+            const dados = snapshot.val();
+
+
+            if (Array.isArray(dados)) {
+
+                vehicles = dados;
+
+            } else if (
+                dados &&
+                typeof dados === "object"
+            ) {
+
+                vehicles = Object.values(dados);
+
+            } else {
+
+                vehicles = [];
+
+            }
+
+
+            localStorage.setItem(
+                "julieta_data",
+                JSON.stringify(vehicles)
+            );
+
+
+            renderTable();
+
+        });
+
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Erro ao carregar os dados do Firebase."
+        );
 
     }
 
 })
-.then(() => {
 
-    dadosRef.on("value", snapshot => {
 
-        const dados = snapshot.val();
+.catch(erro => {
 
-        if(Array.isArray(dados)){
-            vehicles = dados;
-        }
-        else if(dados){
-            vehicles = Object.values(dados);
-        }
-        else{
-            vehicles = [];
-        }
-
-        renderTable();
-
-    });
-
-})
-.catch(error => {
-
-    console.error(error);
+    console.error(erro);
 
     alert(
-        "Erro ao conectar ao banco Firebase. Verifique sua internet e as regras."
+        "Não foi possível conectar ao Firebase. " +
+        "Verifique a internet e as regras do Realtime Database."
     );
 
 });
 
 
 /* =========================================================
-   SALVAR NO FIREBASE
-========================================================= */
+   SALVAR
+   ========================================================= */
 
-function saveToStorage(){
+function saveData() {
 
-    dadosRef.set(vehicles)
-    .then(() => {
-        renderTable();
-    })
-    .catch(error => {
+    localStorage.setItem(
+        "julieta_data",
+        JSON.stringify(vehicles)
+    );
 
-        console.error(error);
 
-        alert("Erro ao salvar os dados.");
+    if (!firebasePronto) {
 
-    });
+        alert(
+            "Aguarde o Firebase terminar de conectar."
+        );
+
+        return;
+
+    }
+
+
+    dadosRef
+        .set(vehicles)
+
+        .catch(erro => {
+
+            console.error(erro);
+
+            alert(
+                "Erro ao salvar no Firebase."
+            );
+
+        });
 
 }
 
 
 /* =========================================================
    MODAL
-========================================================= */
+   ========================================================= */
 
-function openModal(index=null){
+function openModal(index = null) {
 
-    const modal=document.getElementById("modal");
+    const modal =
+        document.getElementById("modal");
+
 
     modal.classList.remove("hidden");
+
     modal.classList.add("flex");
 
-    if(index!==null){
 
-        document.getElementById("modalTitle").innerText="Editar Julieta";
+    if (index !== null) {
 
-        document.getElementById("editIndex").value=index;
+        document.getElementById(
+            "modalTitle"
+        ).innerText =
+            "Editar Julieta";
 
-        document.getElementById("columnNumber").value=
+
+        document.getElementById(
+            "editIndex"
+        ).value =
+            index;
+
+
+        document.getElementById(
+            "columnNumber"
+        ).value =
             vehicles[index].column;
 
-        document.getElementById("vehicleName").value=
+
+        document.getElementById(
+            "vehicleName"
+        ).value =
             vehicles[index].name;
 
-        document.getElementById("revisionDate").value=
-            vehicles[index].date;
 
-        document.getElementById("status").value=
+        document.getElementById(
+            "revisionDate"
+        ).value =
+            vehicles[index].date || "";
+
+
+        document.getElementById(
+            "status"
+        ).value =
             vehicles[index].status || "ok";
 
-    }else{
+    } else {
 
-        document.getElementById("modalTitle").innerText="Nova Julieta";
+        document.getElementById(
+            "modalTitle"
+        ).innerText =
+            "Nova Julieta";
 
-        document.getElementById("vehicleForm").reset();
 
-        document.getElementById("editIndex").value="";
+        document.getElementById(
+            "vehicleForm"
+        ).reset();
+
+
+        document.getElementById(
+            "editIndex"
+        ).value =
+            "";
 
     }
+
+
+    lucide.createIcons();
 
 }
 
 
-function closeModal(){
+/* =========================================================
+   FECHAR MODAL
+   ========================================================= */
 
-    const modal=document.getElementById("modal");
+function closeModal() {
+
+    const modal =
+        document.getElementById("modal");
+
 
     modal.classList.remove("flex");
+
     modal.classList.add("hidden");
 
 }
@@ -448,42 +818,60 @@ function closeModal(){
 
 /* =========================================================
    FORMULÁRIO
-========================================================= */
+   ========================================================= */
 
-document.getElementById("vehicleForm").onsubmit=function(e){
+document.getElementById(
+    "vehicleForm"
+).onsubmit = function(e) {
 
     e.preventDefault();
 
-    const index=document.getElementById("editIndex").value;
 
-    const data={
+    const index =
+        document.getElementById(
+            "editIndex"
+        ).value;
 
-        column:Number(
-            document.getElementById("columnNumber").value
-        ),
+
+    const data = {
+
+        column:
+            Number(
+                document.getElementById(
+                    "columnNumber"
+                ).value
+            ),
 
         name:
-            document.getElementById("vehicleName").value.trim(),
+            document.getElementById(
+                "vehicleName"
+            ).value.trim(),
 
         date:
-            document.getElementById("revisionDate").value,
+            document.getElementById(
+                "revisionDate"
+            ).value,
 
         status:
-            document.getElementById("status").value
+            document.getElementById(
+                "status"
+            ).value
 
     };
 
-    if(index===""){
+
+    if (index === "") {
 
         vehicles.push(data);
 
-    }else{
+    } else {
 
-        vehicles[index]=data;
+        vehicles[index] = data;
 
     }
 
-    saveToStorage();
+
+    saveData();
 
     closeModal();
 
@@ -492,15 +880,23 @@ document.getElementById("vehicleForm").onsubmit=function(e){
 
 /* =========================================================
    EXCLUIR
-========================================================= */
+   ========================================================= */
 
-function deleteVehicle(index){
+function deleteVehicle(index) {
 
-    if(confirm("Excluir esta Julieta?")){
+    if (
+        confirm(
+            "Excluir esta Julieta?"
+        )
+    ) {
 
-        vehicles.splice(index,1);
+        vehicles.splice(
+            index,
+            1
+        );
 
-        saveToStorage();
+
+        saveData();
 
     }
 
@@ -508,44 +904,95 @@ function deleteVehicle(index){
 
 
 /* =========================================================
-   DATAS
-========================================================= */
+   FORMATAR DATA
+   ========================================================= */
 
-function formatDate(date){
+function formatDate(date) {
 
-    if(!date) return "-";
+    if (!date) {
 
-    const p=date.split("-");
+        return "-";
 
-    if(p.length!==3) return date;
+    }
 
-    return `${p[2]}/${p[1]}/${p[0]}`;
+
+    const parts =
+        date.split("-");
+
+
+    if (
+        parts.length !== 3
+    ) {
+
+        return date;
+
+    }
+
+
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
 
 }
 
 
-function getDaysPassed(date){
+/* =========================================================
+   DIAS PASSADOS
+   ========================================================= */
 
-    if(!date) return null;
+function getDaysPassed(date) {
 
-    const p=date.split("-");
+    if (!date) {
 
-    if(p.length!==3) return null;
+        return null;
 
-    const dataPassou=new Date(
-        Number(p[0]),
-        Number(p[1])-1,
-        Number(p[2])
+    }
+
+
+    const partes =
+        date.split("-");
+
+
+    if (
+        partes.length !== 3
+    ) {
+
+        return null;
+
+    }
+
+
+    const dataPassou =
+        new Date(
+            Number(partes[0]),
+            Number(partes[1]) - 1,
+            Number(partes[2])
+        );
+
+
+    dataPassou.setHours(
+        0,
+        0,
+        0,
+        0
     );
 
-    dataPassou.setHours(0,0,0,0);
 
-    const hoje=new Date();
+    const hoje =
+        new Date();
 
-    hoje.setHours(0,0,0,0);
+
+    hoje.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
 
     return Math.floor(
-        (hoje-dataPassou)/(1000*60*60*24)
+        (
+            hoje - dataPassou
+        ) /
+        86400000
     );
 
 }
@@ -553,36 +1000,67 @@ function getDaysPassed(date){
 
 /* =========================================================
    STATUS AUTOMÁTICO
-========================================================= */
 
-function getStatusAutomatico(date){
+   0 - 7 dias  = EM DIA
+   8 - 10 dias = ATENÇÃO
+   11+ dias    = ATRASADA
+   ========================================================= */
 
-    const dias=getDaysPassed(date);
+function getStatusAutomatico(date) {
 
-    if(dias===null)
+    const dias =
+        getDaysPassed(date);
+
+
+    if (dias === null) {
+
         return "ok";
 
-    /* MAIS DE 10 DIAS = ATRASADA */
-    if(dias>10)
+    }
+
+
+    if (dias > 10) {
+
         return "danger";
 
-    /* 8, 9 OU 10 DIAS = ATENÇÃO */
-    if(dias>=8)
+    }
+
+
+    if (dias >= 8) {
+
         return "warning";
 
-    /* 0 ATÉ 7 DIAS = EM DIA */
+    }
+
+
     return "ok";
 
 }
 
 
-function statusText(status){
+/* =========================================================
+   TEXTO DO STATUS
+   ========================================================= */
 
-    if(status==="warning")
+function statusText(status) {
+
+    if (
+        status === "warning"
+    ) {
+
         return "ATENÇÃO";
 
-    if(status==="danger")
+    }
+
+
+    if (
+        status === "danger"
+    ) {
+
         return "ATRASADO";
+
+    }
+
 
     return "EM DIA";
 
@@ -590,41 +1068,55 @@ function statusText(status){
 
 
 /* =========================================================
-   FILTRO
-========================================================= */
+   FILTROS
+   ========================================================= */
 
-function setStatusFilter(status){
+function setStatusFilter(status) {
 
-    statusFilter=status;
+    statusFilter = status;
 
-    document.querySelectorAll(".status-filter")
-    .forEach(button=>{
 
-        button.classList.remove(
-            "bg-blue-600",
-            "text-white"
+    document
+        .querySelectorAll(
+            ".status-filter"
+        )
+        .forEach(button => {
+
+            button.classList.remove(
+                "bg-blue-600",
+                "text-white"
+            );
+
+
+            button.classList.add(
+                "bg-white",
+                "text-slate-600",
+                "border",
+                "border-slate-200"
+            );
+
+        });
+
+
+    const ativo =
+        document.getElementById(
+            "filter-" + status
         );
 
-        button.classList.add(
-            "bg-white",
-            "text-slate-600",
-            "border"
-        );
-
-    });
-
-    const ativo=document.getElementById("filter-"+status);
 
     ativo.classList.remove(
         "bg-white",
         "text-slate-600",
-        "border"
+        "border",
+        "border-slate-200"
     );
+
 
     ativo.classList.add(
         "bg-blue-600",
         "text-white"
     );
+
 
     renderTable();
 
@@ -632,70 +1124,158 @@ function setStatusFilter(status){
 
 
 /* =========================================================
-   RENDERIZAÇÃO
-========================================================= */
+   SEGURANÇA HTML
+   ========================================================= */
 
-function renderTable(){
+function escapeHtml(text) {
 
-    const search=document
-        .getElementById("searchInput")
-        .value
-        .toLowerCase()
-        .trim();
+    return String(
+        text ?? ""
+    ).replace(
+        /[&<>"']/g,
+        function(m) {
 
-    const tbody=document.getElementById("tableBody");
+            return {
 
-    const mobile=document.getElementById("mobileBody");
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;"
 
-    tbody.innerHTML="";
-    mobile.innerHTML="";
+            }[m];
 
-    let quantidade=0;
+        }
+    );
 
-    vehicles.forEach((v,index)=>{
+}
 
-        const nome=String(v.name||"").toLowerCase();
-        const coluna=String(v.column||"");
 
-        if(
-            !nome.includes(search) &&
-            !coluna.includes(search)
-        ) return;
+/* =========================================================
+   RENDERIZAR
+   ========================================================= */
 
-        const status=getStatusAutomatico(v.date);
+function renderTable() {
 
-        if(
-            statusFilter!=="all" &&
-            status!==statusFilter
-        ) return;
+    const search =
+        document
+            .getElementById(
+                "searchInput"
+            )
+            .value
+            .toLowerCase()
+            .trim();
 
-        quantidade++;
 
-        tbody.innerHTML+=`
+    const tbody =
+        document.getElementById(
+            "tableBody"
+        );
 
-<tr class="hover:bg-slate-50">
+
+    const mobileBody =
+        document.getElementById(
+            "mobileBody"
+        );
+
+
+    tbody.innerHTML = "";
+
+    mobileBody.innerHTML = "";
+
+
+    let quantidade = 0;
+
+
+    vehicles.forEach(
+        (v, index) => {
+
+            const texto =
+                String(
+                    v.name || ""
+                ).toLowerCase();
+
+
+            const coluna =
+                String(
+                    v.column || ""
+                );
+
+
+            if (
+                !texto.includes(search) &&
+                !coluna.includes(search)
+            ) {
+
+                return;
+
+            }
+
+
+            const statusAtual =
+                getStatusAutomatico(
+                    v.date
+                );
+
+
+            if (
+                statusFilter !== "all" &&
+                statusAtual !== statusFilter
+            ) {
+
+                return;
+
+            }
+
+
+            quantidade++;
+
+
+            /* DESKTOP */
+
+            tbody.innerHTML += `
+
+<tr class="hover:bg-slate-50 transition">
 
 <td class="p-4">
+
 <div class="inline-flex px-3 py-1 rounded-lg bg-blue-50 text-blue-700 font-bold text-sm">
+
 Coluna ${v.column}
+
 </div>
+
 </td>
+
 
 <td class="p-4 font-bold text-slate-800">
-${v.name}
+
+${escapeHtml(v.name)}
+
 </td>
+
 
 <td class="p-4">
-<span class="px-3 py-1 rounded-full text-xs font-bold status-${status}">
-${statusText(status)}
+
+<span class="px-3 py-1 rounded-full text-xs font-bold status-${statusAtual}">
+
+${statusText(statusAtual)}
+
 </span>
+
 </td>
+
 
 <td class="p-4 text-slate-600 text-sm font-medium">
+
 ${formatDate(v.date)}
+
 </td>
 
+
 <td class="p-4 text-right">
+
+<div class="flex justify-end gap-2">
 
 <button
 onclick="openModal(${index})"
@@ -705,57 +1285,78 @@ class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
 
 </button>
 
+
 <button
 onclick="deleteVehicle(${index})"
 class="p-2 text-red-600 hover:bg-red-50 rounded-lg">
 
-<i data-lucide="trash" class="w-4 h-4"></i>
+<i data-lucide="trash-2" class="w-4 h-4"></i>
 
 </button>
+
+</div>
 
 </td>
 
 </tr>
+
 `;
 
 
-        mobile.innerHTML+=`
+            /* CELULAR */
 
-<div class="bg-white rounded-2xl shadow-sm border p-4">
+            mobileBody.innerHTML += `
+
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
 
 <div class="flex justify-between items-start gap-3">
 
 <div class="min-w-0">
 
 <div class="text-xs text-blue-600 font-bold mb-1">
+
 COLUNA ${v.column}
+
 </div>
+
 
 <div class="text-lg font-bold text-slate-800 break-words">
-${v.name}
-</div>
+
+${escapeHtml(v.name)}
 
 </div>
 
-<span class="px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap status-${status}">
-${statusText(status)}
+</div>
+
+
+<span class="px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap status-${statusAtual}">
+
+${statusText(statusAtual)}
+
 </span>
 
 </div>
+
 
 <div class="mt-4 pt-3 border-t flex justify-between items-center">
 
 <div>
 
 <div class="text-xs text-slate-400">
+
 DATA QUE PASSOU
+
 </div>
+
 
 <div class="font-semibold text-slate-700">
+
 ${formatDate(v.date)}
+
 </div>
 
 </div>
+
 
 <div class="flex gap-2">
 
@@ -767,11 +1368,12 @@ class="p-2.5 text-blue-600 bg-blue-50 rounded-xl">
 
 </button>
 
+
 <button
 onclick="deleteVehicle(${index})"
 class="p-2.5 text-red-600 bg-red-50 rounded-xl">
 
-<i data-lucide="trash"></i>
+<i data-lucide="trash-2"></i>
 
 </button>
 
@@ -780,11 +1382,18 @@ class="p-2.5 text-red-600 bg-red-50 rounded-xl">
 </div>
 
 </div>
+
 `;
 
-    });
+        }
+    );
 
-    document.getElementById("totalVehicles").innerText=quantidade;
+
+    document.getElementById(
+        "totalVehicles"
+    ).innerText =
+        quantidade;
+
 
     lucide.createIcons();
 
@@ -793,27 +1402,49 @@ class="p-2.5 text-red-600 bg-red-50 rounded-xl">
 
 /* =========================================================
    BACKUP
-========================================================= */
+   ========================================================= */
 
-function exportData(){
+function exportData() {
 
-    const blob=new Blob(
-        [JSON.stringify(vehicles,null,2)],
-        {type:"application/json"}
-    );
+    const blob =
+        new Blob(
+            [
+                JSON.stringify(
+                    vehicles,
+                    null,
+                    2
+                )
+            ],
+            {
+                type:
+                    "application/json"
+            }
+        );
 
-    const url=URL.createObjectURL(blob);
 
-    const a=document.createElement("a");
+    const url =
+        URL.createObjectURL(
+            blob
+        );
 
-    a.href=url;
-    a.download="julieta_backup.json";
+
+    const a =
+        document.createElement(
+            "a"
+        );
+
+
+    a.href = url;
+
+    a.download =
+        "julieta_backup.json";
+
 
     document.body.appendChild(a);
 
     a.click();
 
-    document.body.removeChild(a);
+    a.remove();
 
     URL.revokeObjectURL(url);
 
@@ -822,15 +1453,19 @@ function exportData(){
 
 /* =========================================================
    LIMPAR
-========================================================= */
+   ========================================================= */
 
-function clearAllData(){
+function clearAllData() {
 
-    if(confirm("Apagar todas as Julietas?")){
+    if (
+        confirm(
+            "ATENÇÃO: isso apagará todas as Julietas para todos os aparelhos. Continuar?"
+        )
+    ) {
 
-        vehicles=[];
+        vehicles = [];
 
-        saveToStorage();
+        saveData();
 
     }
 
@@ -838,16 +1473,17 @@ function clearAllData(){
 
 
 /* =========================================================
-   INÍCIO
-========================================================= */
+   ÍCONES
+   ========================================================= */
 
-window.onload=()=>{
+window.addEventListener(
+    "load",
+    () => {
 
-    lucide.createIcons();
+        lucide.createIcons();
 
-    renderTable();
-
-};
+    }
+);
 
 </script>
 
