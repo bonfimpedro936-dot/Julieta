@@ -1,146 +1,1378 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Julieta App - Controle de Frotas</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
-        .status-ok { background-color: #dcfce7; color: #166534; }
-        .status-warning { background-color: #fef9c3; color: #854d0e; }
-        .status-danger { background-color: #fee2e2; color: #991b1b; }
-        .status-empty { background-color: #f3f4f6; color: #6b7280; }
-    </style>
-</head>
-<body class="bg-slate-100 min-h-screen font-sans">
-    <div class="max-w-7xl mx-auto p-4">
-        <header class="flex justify-between items-center mb-6 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-            <div class="flex items-center gap-3">
-                <div class="bg-blue-600 p-2 rounded-lg text-white"><i data-lucide="truck"></i></div>
-                <h1 class="text-xl font-bold text-slate-800">Julieta App <span class="text-sm font-normal text-slate-500">| Gestão de Frotas</span></h1>
-            </div>
-            <div class="flex gap-2">
-                <button onclick="exportData()" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 bg-slate-200 rounded-lg hover:bg-slate-300 transition"><i data-lucide="download" class="w-4 h-4"></i> Backup</button>
-                <button onclick="clearAllData()" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition"><i data-lucide="trash-2" class="w-4 h-4"></i> Limpar</button>
-            </div>
-        </header>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div class="md:col-span-2 relative">
-                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"></i>
-                <input type="text" id="searchInput" oninput="renderTable()" placeholder="Buscar veículo ou placa..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm">
-            </div>
-            <button onclick="openModal()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow-md">
-                <i data-lucide="plus-circle" class="w-5 h-5"></i> Novo Veículo
-            </button>
-        </div>
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-slate-50 border-b border-slate-200">
-                        <tr>
-                            <th class="p-4 text-sm font-semibold text-slate-600">Veículo/Placa</th>
-                            <th class="p-4 text-sm font-semibold text-slate-600">Status</th>
-                            <th class="p-4 text-sm font-semibold text-slate-600">Última Revisão</th>
-                            <th class="p-4 text-sm font-semibold text-slate-600 text-right">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody" class="divide-y divide-slate-100"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div id="modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50 backdrop-blur-sm">
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                <h3 id="modalTitle" class="text-lg font-bold text-slate-800">Novo Veículo</h3>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"></i></button>
-            </div>
-            <form id="vehicleForm" class="p-6 space-y-4">
-                <input type="hidden" id="editIndex">
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Identificação (Placa/Nome)</label>
-                    <input type="text" id="vehicleName" required class="w-full p-3 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Data da Revisão</label>
-                    <input type="date" id="revisionDate" required class="w-full p-3 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Status</label>
-                    <select id="status" class="w-full p-3 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="ok">✅ Em Dia</option>
-                        <option value="warning">⚠️ Atenção</option>
-                        <option value="danger">❌ Atrasado</option>
-                    </select>
-                </div>
-                <div class="pt-4 flex gap-3">
-                    <button type="button" onclick="closeModal()" class="flex-1 px-4 py-3 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition">Cancelar</button>
-                    <button type="submit" class="flex-1 px-4 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">Salvar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <script>
-        let vehicles = JSON.parse(localStorage.getItem('julieta_data')) || [];
-        function saveToStorage() {
-            localStorage.setItem('julieta_data', JSON.stringify(vehicles));
-            renderTable();
+
+        * {
+            box-sizing: border-box;
         }
-        function openModal(index = null) {
-            const modal = document.getElementById('modal');
-            modal.classList.replace('hidden', 'flex');
-            if (index !== null) {
-                document.getElementById('modalTitle').innerText = "Editar Veículo";
-                document.getElementById('editIndex').value = index;
-                document.getElementById('vehicleName').value = vehicles[index].name;
-                document.getElementById('revisionDate').value = vehicles[index].date;
-                document.getElementById('status').value = vehicles[index].status;
-            } else {
-                document.getElementById('modalTitle').innerText = "Novo Veículo";
-                document.getElementById('vehicleForm').reset();
-                document.getElementById('editIndex').value = "";
+
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .status-ok {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-warning {
+            background-color: #fef9c3;
+            color: #854d0e;
+        }
+
+        .status-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Cartões */
+
+        .vehicle-card {
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .vehicle-card:active {
+            transform: scale(0.99);
+        }
+
+        /* Esconde tabela no celular */
+        @media (max-width: 767px) {
+
+            .desktop-table {
+                display: none;
             }
+
+            .mobile-cards {
+                display: block;
+            }
+
         }
-        function closeModal() {
-            document.getElementById('modal').classList.replace('flex', 'hidden');
+
+        /* Mostra tabela no computador */
+        @media (min-width: 768px) {
+
+            .desktop-table {
+                display: block;
+            }
+
+            .mobile-cards {
+                display: none;
+            }
+
         }
-        document.getElementById('vehicleForm').onsubmit = (e) => {
-            e.preventDefault();
-            const index = document.getElementById('editIndex').value;
-            const data = {
-                name: document.getElementById('vehicleName').value,
-                date: document.getElementById('revisionDate').value,
-                status: document.getElementById('status').value
-            };
-            if (index === "") vehicles.push(data); else vehicles[index] = data;
-            saveToStorage();
-            closeModal();
+
+    </style>
+
+</head>
+
+
+<body class="bg-slate-100 min-h-screen font-sans">
+
+
+<div class="max-w-7xl mx-auto p-3 sm:p-4">
+
+
+    <!-- ============================= -->
+    <!-- CABEÇALHO -->
+    <!-- ============================= -->
+
+    <header class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-4">
+
+        <div class="flex items-center justify-between gap-3">
+
+            <div class="flex items-center gap-3 min-w-0">
+
+                <div class="bg-blue-600 p-2.5 rounded-xl text-white shrink-0">
+
+                    <i data-lucide="truck" class="w-6 h-6"></i>
+
+                </div>
+
+                <div class="min-w-0">
+
+                    <h1 class="text-lg sm:text-xl font-bold text-slate-800 truncate">
+                        Julieta App
+                    </h1>
+
+                    <p class="text-xs sm:text-sm text-slate-500">
+                        Controle de Frotas
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="flex gap-2 shrink-0">
+
+                <button
+                    onclick="exportData()"
+                    title="Fazer backup"
+                    class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-200 text-slate-600 active:bg-slate-300">
+
+                    <i data-lucide="download" class="w-5 h-5"></i>
+
+                </button>
+
+
+                <button
+                    onclick="clearAllData()"
+                    title="Limpar tudo"
+                    class="w-10 h-10 flex items-center justify-center rounded-xl bg-red-50 text-red-600 active:bg-red-100">
+
+                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ============================= -->
+    <!-- CONTADORES -->
+    <!-- ============================= -->
+
+    <div class="grid grid-cols-3 gap-2 mb-4">
+
+
+        <div class="bg-white rounded-xl border border-slate-200 p-3 text-center">
+
+            <div
+                id="totalCount"
+                class="text-xl font-bold text-slate-800">
+                0
+            </div>
+
+            <div class="text-xs text-slate-500">
+                Total
+            </div>
+
+        </div>
+
+
+        <div class="bg-white rounded-xl border border-slate-200 p-3 text-center">
+
+            <div
+                id="okCount"
+                class="text-xl font-bold text-green-600">
+                0
+            </div>
+
+            <div class="text-xs text-slate-500">
+                Em dia
+            </div>
+
+        </div>
+
+
+        <div class="bg-white rounded-xl border border-slate-200 p-3 text-center">
+
+            <div
+                id="dangerCount"
+                class="text-xl font-bold text-red-600">
+                0
+            </div>
+
+            <div class="text-xs text-slate-500">
+                Atrasados
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- ============================= -->
+    <!-- BUSCA -->
+    <!-- ============================= -->
+
+    <div class="flex flex-col sm:flex-row gap-3 mb-4">
+
+
+        <div class="relative flex-1">
+
+            <i
+                data-lucide="search"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5">
+            </i>
+
+
+            <input
+                type="text"
+                id="searchInput"
+                oninput="renderTable()"
+                placeholder="Buscar frota ou Julieta..."
+                class="w-full pl-10 pr-4 py-3.5 rounded-xl border border-slate-200 bg-white outline-none focus:ring-2 focus:ring-blue-500 shadow-sm text-base"
+            >
+
+        </div>
+
+
+        <button
+            onclick="openModal()"
+            class="w-full sm:w-auto bg-blue-600 text-white px-5 py-3.5 rounded-xl font-bold hover:bg-blue-700 active:bg-blue-800 transition flex items-center justify-center gap-2 shadow-md">
+
+            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+
+            Novo Veículo
+
+        </button>
+
+
+    </div>
+
+
+
+    <!-- ============================= -->
+    <!-- VERSÃO CELULAR -->
+    <!-- ============================= -->
+
+    <div
+        id="mobileCards"
+        class="mobile-cards space-y-3">
+    </div>
+
+
+
+    <!-- ============================= -->
+    <!-- VERSÃO COMPUTADOR -->
+    <!-- ============================= -->
+
+    <div class="desktop-table bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+
+        <div class="overflow-x-auto">
+
+            <table class="w-full text-left border-collapse">
+
+                <thead class="bg-slate-50 border-b border-slate-200">
+
+                    <tr>
+
+                        <th class="p-4 text-sm font-semibold text-slate-600">
+                            Frota Frente
+                        </th>
+
+                        <th class="p-4 text-sm font-semibold text-slate-600">
+                            Frota Traseira
+                        </th>
+
+                        <th class="p-4 text-sm font-semibold text-slate-600">
+                            Julieta
+                        </th>
+
+                        <th class="p-4 text-sm font-semibold text-slate-600">
+                            Revisão
+                        </th>
+
+                        <th class="p-4 text-sm font-semibold text-slate-600">
+                            Status
+                        </th>
+
+                        <th class="p-4 text-sm font-semibold text-slate-600 text-right">
+                            Ações
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody
+                    id="tableBody"
+                    class="divide-y divide-slate-100">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+
+</div>
+
+
+
+<!-- ============================= -->
+<!-- MODAL -->
+<!-- ============================= -->
+
+<div
+    id="modal"
+    class="fixed inset-0 bg-black/50 hidden items-end sm:items-center justify-center p-0 sm:p-4 z-50 backdrop-blur-sm">
+
+
+    <div
+        class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden">
+
+
+        <!-- Título -->
+
+        <div class="p-5 border-b border-slate-100 flex justify-between items-center">
+
+            <div>
+
+                <h3
+                    id="modalTitle"
+                    class="text-lg font-bold text-slate-800">
+                    Novo Veículo
+                </h3>
+
+                <p class="text-xs text-slate-500 mt-1">
+                    Cadastre as informações da frota
+                </p>
+
+            </div>
+
+
+            <button
+                onclick="closeModal()"
+                class="w-10 h-10 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100">
+
+                <i data-lucide="x"></i>
+
+            </button>
+
+        </div>
+
+
+
+        <!-- FORMULÁRIO -->
+
+        <form
+            id="vehicleForm"
+            class="p-5 space-y-4">
+
+            <input
+                type="hidden"
+                id="editIndex">
+
+
+
+            <!-- FRENTE -->
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-1">
+
+                    Frota da Frente
+
+                </label>
+
+
+                <input
+                    type="text"
+                    id="front"
+                    inputmode="numeric"
+                    required
+                    placeholder="Ex: 230003"
+                    class="w-full p-3.5 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-base"
+                >
+
+            </div>
+
+
+
+            <!-- TRASEIRA -->
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-1">
+
+                    Frota Traseira
+
+                </label>
+
+
+                <input
+                    type="text"
+                    id="back"
+                    inputmode="numeric"
+                    required
+                    placeholder="Ex: 231015"
+                    class="w-full p-3.5 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-base"
+                >
+
+            </div>
+
+
+
+            <!-- JULIETA -->
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-1">
+
+                    Número da Julieta
+
+                </label>
+
+
+                <input
+                    type="number"
+                    id="julieta"
+                    required
+                    placeholder="Ex: 3"
+                    class="w-full p-3.5 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-base"
+                >
+
+            </div>
+
+
+
+            <!-- DATA -->
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-1">
+
+                    Data da Revisão
+
+                </label>
+
+
+                <input
+                    type="date"
+                    id="revisionDate"
+                    class="w-full p-3.5 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-base"
+                >
+
+            </div>
+
+
+
+            <!-- STATUS -->
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-1">
+
+                    Status
+
+                </label>
+
+
+                <select
+                    id="status"
+                    class="w-full p-3.5 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-base">
+
+                    <option value="ok">
+                        🟢 Em Dia
+                    </option>
+
+                    <option value="warning">
+                        🟡 Atenção
+                    </option>
+
+                    <option value="danger">
+                        🔴 Atrasado
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- BOTÕES -->
+
+            <div class="pt-2 grid grid-cols-2 gap-3">
+
+                <button
+                    type="button"
+                    onclick="closeModal()"
+                    class="px-4 py-3.5 text-slate-600 font-medium bg-slate-100 hover:bg-slate-200 rounded-xl">
+
+                    Cancelar
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="px-4 py-3.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700">
+
+                    Salvar
+
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+
+/* =====================================================
+   FROTAS
+===================================================== */
+
+const frotasPadrao = [
+
+    ["230001","231011",1],
+    ["230002","231006",2],
+    ["230003","231015",3],
+    ["230006","231010",6],
+    ["230007","231016",7],
+
+    ["230008","231002",8],
+    ["230009","231012",9],
+    ["230010","231003",10],
+    ["230011","231009",11],
+    ["230012","231004",12],
+
+    ["230013","231007",13],
+    ["230014","231008",14],
+    ["230015","231005",15],
+    ["230016","231001",16],
+    ["230017","231017",17],
+
+    ["230018","231026",18],
+    ["230019","231024",19],
+    ["230020","231027",20],
+    ["230021","231018",21],
+    ["230022","231020",22],
+
+    ["230023","231021",23],
+    ["230024","231025",24],
+    ["230025","231028",25],
+    ["230026","231029",26],
+    ["230027","231022",27],
+
+    ["230028","231023",28],
+    ["230029","231019",29],
+    ["230089","231072",30],
+    ["230088","231074",32],
+    ["230087","231073",34],
+
+    ["230082","231067",36],
+    ["230084","231071",37],
+    ["230077","231065",38],
+    ["230076","231068",39],
+    ["230046","231045",40],
+
+    ["230049","231048",41],
+    ["230047","231046",42],
+    ["230048","231047",44],
+    ["230093","231120",45],
+    ["230091","231077",47],
+
+    ["230092","231079",48],
+    ["230052","231052",49],
+    ["230055","231053",50],
+
+    ["230094","231078",51],
+
+    ["230125","231114",53],
+
+    ["230127","231115",54],
+    ["230128","231116",54],
+
+    ["230054","231054",55],
+
+    ["230051","231050",31],
+    ["230053","231051",33],
+    ["230005","231014",5],
+    ["230004","231013",4],
+    ["230083","231069",35],
+    ["230050","231049",43],
+    ["230126","231117",52]
+
+];
+
+
+
+/* =====================================================
+   CARREGAR DADOS
+===================================================== */
+
+let vehicles =
+    JSON.parse(localStorage.getItem("julieta_data")) || [];
+
+
+
+/*
+   Se não houver dados salvos,
+   cadastra automaticamente as frotas.
+*/
+
+if (vehicles.length === 0) {
+
+    vehicles = frotasPadrao.map(frota => ({
+
+        front: frota[0],
+
+        back: frota[1],
+
+        julieta: frota[2],
+
+        date: "",
+
+        status: "ok"
+
+    }));
+
+
+    localStorage.setItem(
+        "julieta_data",
+        JSON.stringify(vehicles)
+    );
+
+}
+
+
+
+/* =====================================================
+   SALVAR
+===================================================== */
+
+function saveToStorage() {
+
+    localStorage.setItem(
+        "julieta_data",
+        JSON.stringify(vehicles)
+    );
+
+    renderTable();
+
+}
+
+
+
+/* =====================================================
+   ABRIR MODAL
+===================================================== */
+
+function openModal(index = null) {
+
+    const modal =
+        document.getElementById("modal");
+
+
+    modal.classList.remove("hidden");
+
+    modal.classList.add("flex");
+
+
+    if (index !== null) {
+
+        document.getElementById("modalTitle").innerText =
+            "Editar Veículo";
+
+
+        document.getElementById("editIndex").value =
+            index;
+
+
+        document.getElementById("front").value =
+            vehicles[index].front;
+
+
+        document.getElementById("back").value =
+            vehicles[index].back;
+
+
+        document.getElementById("julieta").value =
+            vehicles[index].julieta;
+
+
+        document.getElementById("revisionDate").value =
+            vehicles[index].date;
+
+
+        document.getElementById("status").value =
+            vehicles[index].status;
+
+    }
+
+    else {
+
+        document.getElementById("modalTitle").innerText =
+            "Novo Veículo";
+
+
+        document.getElementById("vehicleForm").reset();
+
+
+        document.getElementById("editIndex").value =
+            "";
+
+    }
+
+}
+
+
+
+/* =====================================================
+   FECHAR MODAL
+===================================================== */
+
+function closeModal() {
+
+    const modal =
+        document.getElementById("modal");
+
+
+    modal.classList.remove("flex");
+
+    modal.classList.add("hidden");
+
+}
+
+
+
+/* =====================================================
+   FORMULÁRIO
+===================================================== */
+
+document.getElementById("vehicleForm").onsubmit =
+function(e) {
+
+    e.preventDefault();
+
+
+    const index =
+        document.getElementById("editIndex").value;
+
+
+    const data = {
+
+        front:
+            document.getElementById("front").value.trim(),
+
+        back:
+            document.getElementById("back").value.trim(),
+
+        julieta:
+            document.getElementById("julieta").value,
+
+        date:
+            document.getElementById("revisionDate").value,
+
+        status:
+            document.getElementById("status").value
+
+    };
+
+
+    if (index === "") {
+
+        vehicles.push(data);
+
+    }
+
+    else {
+
+        vehicles[index] = data;
+
+    }
+
+
+    saveToStorage();
+
+    closeModal();
+
+};
+
+
+
+/* =====================================================
+   EXCLUIR
+===================================================== */
+
+function deleteVehicle(index) {
+
+    if (
+        confirm(
+            "Tem certeza que deseja excluir esta frota?"
+        )
+    ) {
+
+        vehicles.splice(index, 1);
+
+        saveToStorage();
+
+    }
+
+}
+
+
+
+/* =====================================================
+   TEXTO DO STATUS
+===================================================== */
+
+function statusInfo(status) {
+
+    if (status === "ok") {
+
+        return {
+            texto: "EM DIA",
+            icone: "check-circle"
         };
-        function deleteVehicle(index) {
-            if(confirm("Excluir este veículo?")) { vehicles.splice(index, 1); saveToStorage(); }
+
+    }
+
+
+    if (status === "warning") {
+
+        return {
+            texto: "ATENÇÃO",
+            icone: "alert-triangle"
+        };
+
+    }
+
+
+    return {
+
+        texto: "ATRASADO",
+
+        icone: "x-circle"
+
+    };
+
+}
+
+
+
+/* =====================================================
+   RENDERIZAR
+===================================================== */
+
+function renderTable() {
+
+    const search =
+        document.getElementById("searchInput")
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    const tbody =
+        document.getElementById("tableBody");
+
+
+    const mobile =
+        document.getElementById("mobileCards");
+
+
+    tbody.innerHTML = "";
+
+    mobile.innerHTML = "";
+
+
+    let total = 0;
+
+    let ok = 0;
+
+    let danger = 0;
+
+
+
+    vehicles.forEach((v, index) => {
+
+
+        const textoBusca = (
+
+            String(v.front) +
+            " " +
+            String(v.back) +
+            " " +
+            String(v.julieta)
+
+        ).toLowerCase();
+
+
+        if (!textoBusca.includes(search)) {
+
+            return;
+
         }
-        function renderTable() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = "";
-            vehicles.forEach((v, index) => {
-                if (v.name.toLowerCase().includes(search)) {
-                    tbody.innerHTML += `<tr class="hover:bg-slate-50 transition"><td class="p-4 font-medium text-slate-800">${v.name}</td><td class="p-4"><span class="px-3 py-1 rounded-full text-xs font-bold status-${v.status}">${v.status.toUpperCase()}</span></td><td class="p-4 text-slate-600 text-sm">${v.date.split('-').reverse().join('/')}</td><td class="p-4 text-right flex justify-end gap-2"><button onclick="openModal(${index})" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"><i data-lucide="edit-3" class="w-4 h-4"></i></button><button onclick="deleteVehicle(${index})" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"><i data-lucide="trash" class="w-4 h-4"></i></button></td></tr>`;
-                }
-            });
-            lucide.createIcons();
+
+
+        total++;
+
+
+        if (v.status === "ok") {
+
+            ok++;
+
         }
-        function exportData() {
-            const blob = new Blob([JSON.stringify(vehicles)], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = 'julieta_backup.json'; a.click();
+
+
+        if (v.status === "danger") {
+
+            danger++;
+
         }
-        function clearAllData() {
-            if(confirm("Apagar tudo?")) { vehicles = []; saveToStorage(); }
+
+
+        const info =
+            statusInfo(v.status);
+
+
+        const dataFormatada =
+            v.date
+                ? v.date.split("-").reverse().join("/")
+                : "Não informada";
+
+
+
+        /* ==========================================
+           TABELA DESKTOP
+        ========================================== */
+
+        tbody.innerHTML += `
+
+        <tr class="hover:bg-slate-50">
+
+            <td class="p-4 font-bold text-slate-800">
+                ${v.front}
+            </td>
+
+            <td class="p-4 font-bold text-slate-800">
+                ${v.back}
+            </td>
+
+            <td class="p-4">
+
+                <span class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full text-xs font-bold">
+
+                    Julieta ${v.julieta}
+
+                </span>
+
+            </td>
+
+            <td class="p-4 text-sm text-slate-600">
+                ${dataFormatada}
+            </td>
+
+            <td class="p-4">
+
+                <span class="px-3 py-1.5 rounded-full text-xs font-bold status-${v.status}">
+
+                    ${info.texto}
+
+                </span>
+
+            </td>
+
+            <td class="p-4">
+
+                <div class="flex justify-end gap-2">
+
+                    <button
+                        onclick="openModal(${index})"
+                        class="w-10 h-10 flex items-center justify-center rounded-xl text-blue-600 hover:bg-blue-50">
+
+                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+
+                    </button>
+
+                    <button
+                        onclick="deleteVehicle(${index})"
+                        class="w-10 h-10 flex items-center justify-center rounded-xl text-red-600 hover:bg-red-50">
+
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+
+                    </button>
+
+                </div>
+
+            </td>
+
+        </tr>
+
+        `;
+
+
+
+        /* ==========================================
+           CARTÃO MOBILE
+        ========================================== */
+
+        mobile.innerHTML += `
+
+        <div class="vehicle-card bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+
+
+            <!-- CABEÇALHO DO CARTÃO -->
+
+            <div class="p-4 flex items-center justify-between border-b border-slate-100">
+
+
+                <div class="flex items-center gap-3">
+
+                    <div class="bg-blue-100 text-blue-700 w-11 h-11 rounded-xl flex items-center justify-center">
+
+                        <i data-lucide="truck" class="w-5 h-5"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="text-xs text-slate-500">
+                            Julieta
+                        </div>
+
+                        <div class="text-lg font-bold text-slate-800">
+                            ${v.julieta}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <span class="px-3 py-1.5 rounded-full text-xs font-bold status-${v.status}">
+
+                    ${info.texto}
+
+                </span>
+
+
+            </div>
+
+
+
+            <!-- INFORMAÇÕES -->
+
+            <div class="p-4 space-y-3">
+
+
+                <!-- FRENTE -->
+
+                <div class="flex items-center justify-between">
+
+                    <div class="flex items-center gap-3">
+
+                        <div class="bg-slate-100 p-2 rounded-lg">
+
+                            <i
+                                data-lucide="truck"
+                                class="w-5 h-5 text-slate-600">
+                            </i>
+
+                        </div>
+
+
+                        <div>
+
+                            <div class="text-xs text-slate-500">
+                                Frota da frente
+                            </div>
+
+                            <div class="font-bold text-slate-800 text-lg">
+                                ${v.front}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- TRASEIRA -->
+
+                <div class="flex items-center justify-between">
+
+                    <div class="flex items-center gap-3">
+
+                        <div class="bg-slate-100 p-2 rounded-lg">
+
+                            <i
+                                data-lucide="link"
+                                class="w-5 h-5 text-slate-600">
+                            </i>
+
+                        </div>
+
+
+                        <div>
+
+                            <div class="text-xs text-slate-500">
+                                Frota traseira
+                            </div>
+
+                            <div class="font-bold text-slate-800 text-lg">
+                                ${v.back}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- DATA -->
+
+                <div class="flex items-center gap-3 pt-1">
+
+                    <div class="bg-slate-100 p-2 rounded-lg">
+
+                        <i
+                            data-lucide="calendar"
+                            class="w-5 h-5 text-slate-600">
+                        </i>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="text-xs text-slate-500">
+                            Última revisão
+                        </div>
+
+                        <div class="font-medium text-slate-700">
+                            ${dataFormatada}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- AÇÕES -->
+
+            <div class="grid grid-cols-2 border-t border-slate-100">
+
+
+                <button
+                    onclick="openModal(${index})"
+                    class="py-3.5 flex items-center justify-center gap-2 text-blue-600 font-semibold hover:bg-blue-50 active:bg-blue-100">
+
+                    <i
+                        data-lucide="edit-3"
+                        class="w-4 h-4">
+                    </i>
+
+                    Editar
+
+                </button>
+
+
+                <button
+                    onclick="deleteVehicle(${index})"
+                    class="py-3.5 flex items-center justify-center gap-2 text-red-600 font-semibold border-l border-slate-100 hover:bg-red-50 active:bg-red-100">
+
+                    <i
+                        data-lucide="trash-2"
+                        class="w-4 h-4">
+                    </i>
+
+                    Excluir
+
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+        `;
+
+    });
+
+
+
+    /* ==========================================
+       CONTADORES
+    ========================================== */
+
+    document.getElementById("totalCount").innerText =
+        total;
+
+
+    document.getElementById("okCount").innerText =
+        ok;
+
+
+    document.getElementById("dangerCount").innerText =
+        danger;
+
+
+
+    /* ==========================================
+       SE NADA FOR ENCONTRADO
+    ========================================== */
+
+    if (total === 0) {
+
+        mobile.innerHTML = `
+
+            <div class="bg-white rounded-2xl border border-slate-200 p-8 text-center">
+
+                <div class="mx-auto bg-slate-100 w-14 h-14 rounded-full flex items-center justify-center mb-3">
+
+                    <i
+                        data-lucide="search-x"
+                        class="w-7 h-7 text-slate-400">
+                    </i>
+
+                </div>
+
+                <h3 class="font-bold text-slate-700">
+                    Nenhuma frota encontrada
+                </h3>
+
+                <p class="text-sm text-slate-500 mt-1">
+                    Tente pesquisar outro número.
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+
+
+    lucide.createIcons();
+
+}
+
+
+
+/* =====================================================
+   BACKUP
+===================================================== */
+
+function exportData() {
+
+    const blob = new Blob(
+
+        [
+            JSON.stringify(
+                vehicles,
+                null,
+                2
+            )
+        ],
+
+        {
+            type: "application/json"
         }
-        window.onload = () => { renderTable(); lucide.createIcons(); };
-    </script>
+
+    );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const a =
+        document.createElement("a");
+
+
+    a.href = url;
+
+    a.download =
+        "julieta_backup.json";
+
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+
+}
+
+
+
+/* =====================================================
+   LIMPAR
+===================================================== */
+
+function clearAllData() {
+
+    if (
+        confirm(
+            "Apagar todas as frotas cadastradas?"
+        )
+    ) {
+
+        vehicles = [];
+
+        saveToStorage();
+
+    }
+
+}
+
+
+
+/* =====================================================
+   INICIAR
+===================================================== */
+
+window.onload = function() {
+
+    renderTable();
+
+    lucide.createIcons();
+
+};
+
+
+
+/* =====================================================
+   FECHAR MODAL CLICANDO FORA
+===================================================== */
+
+document.getElementById("modal").addEventListener(
+    "click",
+    function(e) {
+
+        if (e.target === this) {
+
+            closeModal();
+
+        }
+
+    }
+);
+
+</script>
+
 </body>
 </html>
