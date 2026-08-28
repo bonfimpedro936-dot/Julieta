@@ -25,6 +25,10 @@
         -webkit-tap-highlight-color: transparent;
     }
 
+    .status-filter {
+        transition: all 0.2s ease;
+    }
+
     @media (max-width: 640px) {
         .desktop-table {
             display: none;
@@ -104,7 +108,7 @@
 
 
 <!-- PESQUISA + NOVO -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
 
     <div class="md:col-span-2 relative">
 
@@ -129,6 +133,48 @@
         <i data-lucide="plus-circle" class="w-5 h-5"></i>
 
         Nova Julieta
+
+    </button>
+
+</div>
+
+
+<!-- FILTRO DE STATUS -->
+<div class="flex gap-2 mb-4 overflow-x-auto pb-1">
+
+    <button
+        onclick="setStatusFilter('all')"
+        id="filter-all"
+        class="status-filter whitespace-nowrap px-4 py-2 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-sm">
+
+        Todas
+
+    </button>
+
+    <button
+        onclick="setStatusFilter('ok')"
+        id="filter-ok"
+        class="status-filter whitespace-nowrap px-4 py-2 rounded-xl text-sm font-bold bg-white text-slate-600 border border-slate-200">
+
+        🟢 Em Dia
+
+    </button>
+
+    <button
+        onclick="setStatusFilter('warning')"
+        id="filter-warning"
+        class="status-filter whitespace-nowrap px-4 py-2 rounded-xl text-sm font-bold bg-white text-slate-600 border border-slate-200">
+
+        🟡 Atenção
+
+    </button>
+
+    <button
+        onclick="setStatusFilter('danger')"
+        id="filter-danger"
+        class="status-filter whitespace-nowrap px-4 py-2 rounded-xl text-sm font-bold bg-white text-slate-600 border border-slate-200">
+
+        🔴 Atrasadas
 
     </button>
 
@@ -335,7 +381,7 @@
 </div><script>
 
 /* =========================================================
-   55 COLUNAS / PARES DA FOTO
+   55 COLUNAS / PARES
    ========================================================= */
 
 const dadosJulietas = [
@@ -427,11 +473,8 @@ if (
     vehicles = dadosJulietas.map(item => ({
 
         column: item[0],
-
         name: item[1],
-
         date: item[2],
-
         status: "ok"
 
     }));
@@ -459,7 +502,7 @@ function saveToStorage() {
 
 
 /* =========================================================
-   ABRIR MODAL
+   MODAL
    ========================================================= */
 
 function openModal(index = null) {
@@ -475,64 +518,37 @@ function openModal(index = null) {
 
     if (index !== null) {
 
-        document.getElementById(
-            "modalTitle"
-        ).innerText =
+        document.getElementById("modalTitle").innerText =
             "Editar Julieta";
 
+        document.getElementById("editIndex").value =
+            index;
 
-        document.getElementById(
-            "editIndex"
-        ).value = index;
-
-
-        document.getElementById(
-            "columnNumber"
-        ).value =
+        document.getElementById("columnNumber").value =
             vehicles[index].column;
 
-
-        document.getElementById(
-            "vehicleName"
-        ).value =
+        document.getElementById("vehicleName").value =
             vehicles[index].name;
 
-
-        document.getElementById(
-            "revisionDate"
-        ).value =
+        document.getElementById("revisionDate").value =
             vehicles[index].date;
 
-
-        document.getElementById(
-            "status"
-        ).value =
+        document.getElementById("status").value =
             vehicles[index].status;
 
     } else {
 
-        document.getElementById(
-            "modalTitle"
-        ).innerText =
+        document.getElementById("modalTitle").innerText =
             "Nova Julieta";
 
+        document.getElementById("vehicleForm").reset();
 
-        document.getElementById(
-            "vehicleForm"
-        ).reset();
-
-
-        document.getElementById(
-            "editIndex"
-        ).value = "";
+        document.getElementById("editIndex").value =
+            "";
 
     }
 }
 
-
-/* =========================================================
-   FECHAR MODAL
-   ========================================================= */
 
 function closeModal() {
 
@@ -556,7 +572,6 @@ document.getElementById(
 ).onsubmit = (e) => {
 
     e.preventDefault();
-
 
     const index =
         document.getElementById(
@@ -642,16 +657,13 @@ function formatDate(date) {
     if (!date)
         return "-";
 
-
     const parts =
         date.split("-");
-
 
     if (
         parts.length !== 3
     )
         return date;
-
 
     return `${parts[2]}/${parts[1]}/${parts[0]}`;
 
@@ -659,7 +671,7 @@ function formatDate(date) {
 
 
 /* =========================================================
-   NOVO: CALCULAR DIAS E STATUS AUTOMATICAMENTE
+   CALCULAR DIAS PASSADOS
    ========================================================= */
 
 function getDaysPassed(date) {
@@ -686,62 +698,111 @@ function getDaysPassed(date) {
 
     hoje.setHours(0, 0, 0, 0);
 
-    const diferenca = Math.floor(
+    return Math.floor(
         (hoje - dataPassou) /
         (1000 * 60 * 60 * 24)
     );
 
-    return diferenca;
 }
 
+
+/* =========================================================
+   STATUS AUTOMÁTICO
+   ========================================================= */
 
 function getStatusAutomatico(date) {
 
     const dias = getDaysPassed(date);
 
-    /*
-       Sem data = não marcar como atraso.
-    */
     if (dias === null) {
         return "ok";
     }
 
     /*
-       Mais de 10 dias = ATRASADO.
+       MAIS DE 10 DIAS = ATRASADO
     */
     if (dias > 10) {
         return "danger";
     }
 
     /*
-       De 8 até 10 dias = ATENÇÃO.
+       8, 9 ou 10 dias = ATENÇÃO
     */
     if (dias >= 8) {
         return "warning";
     }
 
     /*
-       Até 7 dias = EM DIA.
+       0 até 7 dias = EM DIA
     */
     return "ok";
+
 }
 
 
 function statusText(status) {
 
-    if (
-        status === "warning"
-    )
+    if (status === "warning")
         return "ATENÇÃO";
 
-
-    if (
-        status === "danger"
-    )
+    if (status === "danger")
         return "ATRASADO";
 
-
     return "EM DIA";
+
+}
+
+
+/* =========================================================
+   FILTRO
+   ========================================================= */
+
+let statusFilter = "all";
+
+
+function setStatusFilter(status) {
+
+    statusFilter = status;
+
+    document.querySelectorAll(
+        ".status-filter"
+    ).forEach(button => {
+
+        button.classList.remove(
+            "bg-blue-600",
+            "text-white"
+        );
+
+        button.classList.add(
+            "bg-white",
+            "text-slate-600",
+            "border",
+            "border-slate-200"
+        );
+
+    });
+
+
+    const ativo =
+        document.getElementById(
+            "filter-" + status
+        );
+
+
+    ativo.classList.remove(
+        "bg-white",
+        "text-slate-600",
+        "border",
+        "border-slate-200"
+    );
+
+    ativo.classList.add(
+        "bg-blue-600",
+        "text-white"
+    );
+
+
+    renderTable();
 
 }
 
@@ -805,20 +866,34 @@ function renderTable() {
             }
 
 
-            quantidade++;
-
-
             /*
-               IMPORTANTE:
-               O status exibido agora é calculado
-               pela DATA, e não pelo status salvo.
+               STATUS SEMPRE CALCULADO PELA DATA
             */
 
             const statusAtual =
-                getStatusAutomatico(v.date);
+                getStatusAutomatico(
+                    v.date
+                );
 
 
-            /* DESKTOP */
+            /*
+               APLICA O FILTRO
+            */
+
+            if (
+                statusFilter !== "all" &&
+                statusAtual !== statusFilter
+            ) {
+                return;
+            }
+
+
+            quantidade++;
+
+
+            /* =================================================
+               DESKTOP
+               ================================================= */
 
             tbody.innerHTML += `
 
@@ -903,7 +978,9 @@ function renderTable() {
             `;
 
 
-            /* CELULAR */
+            /* =================================================
+               CELULAR
+               ================================================= */
 
             mobileBody.innerHTML += `
 
@@ -911,7 +988,7 @@ function renderTable() {
 
                     <div class="flex justify-between items-start gap-3">
 
-                        <div>
+                        <div class="min-w-0">
 
                             <div class="text-xs text-blue-600 font-bold mb-1">
 
@@ -920,7 +997,7 @@ function renderTable() {
                             </div>
 
 
-                            <div class="text-lg font-bold text-slate-800">
+                            <div class="text-lg font-bold text-slate-800 break-words">
 
                                 ${v.name}
 
@@ -939,7 +1016,7 @@ function renderTable() {
                     </div>
 
 
-                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center gap-3">
 
                         <div>
 
@@ -959,7 +1036,7 @@ function renderTable() {
                         </div>
 
 
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 shrink-0">
 
                             <button
                                 onclick="openModal(${index})"
@@ -1042,7 +1119,6 @@ function exportData() {
 
 
     a.href = url;
-
 
     a.download =
         "julieta_backup.json";
