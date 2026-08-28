@@ -3,145 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Julieta - Controle de Frotas</title>
+    <title>Julieta App - Controle de Frotas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: sans-serif; }
-        .card-vencido { background-color: #7f1d1d; border: 2px solid #ef4444; }
-        .card-ok { background-color: #064e3b; border: 2px solid #10b981; }
-        .card-alerta { background-color: #78350f; border: 2px solid #f59e0b; }
-        .card-vazio { background-color: #1e293b; border: 2px solid #475569; }
+        .status-ok { background-color: #dcfce7; color: #166534; }
+        .status-warning { background-color: #fef9c3; color: #854d0e; }
+        .status-danger { background-color: #fee2e2; color: #991b1b; }
+        .status-empty { background-color: #f3f4f6; color: #6b7280; }
     </style>
 </head>
-<body class="p-4 pb-20">
-
-    <div class="max-w-md mx-auto">
-        <header class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold flex items-center gap-2">
-                <i data-lucide="truck"></i> Julieta App
-            </h1>
-            <div id="current-date" class="text-xs text-slate-400"></div>
+<body class="bg-slate-100 min-h-screen font-sans">
+    <div class="max-w-7xl mx-auto p-4">
+        <header class="flex justify-between items-center mb-6 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 p-2 rounded-lg text-white"><i data-lucide="truck"></i></div>
+                <h1 class="text-xl font-bold text-slate-800">Julieta App <span class="text-sm font-normal text-slate-500">| Gestão de Frotas</span></h1>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="exportData()" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 bg-slate-200 rounded-lg hover:bg-slate-300 transition"><i data-lucide="download" class="w-4 h-4"></i> Backup</button>
+                <button onclick="clearAllData()" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition"><i data-lucide="trash-2" class="w-4 h-4"></i> Limpar</button>
+            </div>
         </header>
-
-        <div class="relative mb-6">
-            <i data-lucide="search" class="absolute left-3 top-3 text-slate-400 w-5 h-5"></i>
-            <input type="text" id="search" placeholder="Buscar frota ou coluna..." 
-                class="w-full bg-slate-800 border border-slate-700 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="md:col-span-2 relative">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"></i>
+                <input type="text" id="searchInput" oninput="renderTable()" placeholder="Buscar veículo ou placa..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm">
+            </div>
+            <button onclick="openModal()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow-md">
+                <i data-lucide="plus-circle" class="w-5 h-5"></i> Novo Veículo
+            </button>
         </div>
-
-        <div id="grid-frotas" class="grid grid-cols-2 gap-3"></div>
-    </div>
-
-    <div id="modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-900 border border-slate-700 p-6 rounded-2xl w-full max-w-sm">
-            <h2 class="text-xl font-bold mb-4" id="modal-title">Editar Data</h2>
-            <input type="date" id="date-input" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 mb-4 text-white">
-            <div class="flex gap-3">
-                <button onclick="closeModal()" class="flex-1 py-3 rounded-lg bg-slate-700 font-medium">Cancelar</button>
-                <button onclick="saveDate()" class="flex-1 py-3 rounded-lg bg-blue-600 font-medium">Salvar</button>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 border-b border-slate-200">
+                        <tr>
+                            <th class="p-4 text-sm font-semibold text-slate-600">Veículo/Placa</th>
+                            <th class="p-4 text-sm font-semibold text-slate-600">Status</th>
+                            <th class="p-4 text-sm font-semibold text-slate-600">Última Revisão</th>
+                            <th class="p-4 text-sm font-semibold text-slate-600 text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-slate-100"></tbody>
+                </table>
             </div>
         </div>
     </div>
-
+    <div id="modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                <h3 id="modalTitle" class="text-lg font-bold text-slate-800">Novo Veículo</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"></i></button>
+            </div>
+            <form id="vehicleForm" class="p-6 space-y-4">
+                <input type="hidden" id="editIndex">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Identificação (Placa/Nome)</label>
+                    <input type="text" id="vehicleName" required class="w-full p-3 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Data da Revisão</label>
+                    <input type="date" id="revisionDate" required class="w-full p-3 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Status</label>
+                    <select id="status" class="w-full p-3 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="ok">✅ Em Dia</option>
+                        <option value="warning">⚠️ Atenção</option>
+                        <option value="danger">❌ Atrasado</option>
+                    </select>
+                </div>
+                <div class="pt-4 flex gap-3">
+                    <button type="button" onclick="closeModal()" class="flex-1 px-4 py-3 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition">Cancelar</button>
+                    <button type="submit" class="flex-1 px-4 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <script>
-        const fleetData = {
-            1: '230001-231011', 2: '230002-231006', 3: '230003-231015', 4: '230004-231013', 5: '230005-231014',
-            6: '230006-231010', 7: '230007-231016', 8: '230008-231002', 9: '230009-231012', 10: '230010-231003',
-            11: '230011-231009', 12: '230012-231004', 13: '230013-231007', 14: '230014-231008', 15: '230015-231005',
-            16: '230016-231001', 17: '230017-231017', 18: '230018-231026', 19: '230019-231024', 20: '230020-231027',
-            21: '230021-231018', 22: '230022-231020', 23: '230023-231021', 24: '230024-231025', 25: '230025-231028',
-            26: '230026-231029', 27: '230027-231022', 28: '230028-231023', 29: '230029-231019', 30: '230089-231072',
-            31: '230051-231050', 32: '230088-231074', 33: '230053-231051', 34: '230087-231073', 35: '230083-231069',
-            36: '230082-231067', 37: '230084-231071', 38: '230077-231065', 39: '230076-231068', 40: '230046-231045',
-            41: '230049-231048', 42: '230047-231046', 43: '230050-231049', 44: '230048-231047', 45: '230093-231120',
-            46: '230091-231077', 47: '230094-231078', 48: '230092-231079', 49: '230052-231052', 50: '230055-231053',
-            51: '230127-231115', 52: '230126-231117', 53: '230125-231114', 54: '230128-231116', 55: '230054-231054'
-        };
-
-        // Base de dados completa com as datas processadas das fotos
-        const initialDates = {
-            1: '2026-08-10', 2: '2026-08-12', 3: '2026-08-05', 4: '2026-08-15', 5: '2026-08-05',
-            6: '2026-08-11', 7: '2026-08-08', 8: '2026-08-02', 9: '2026-08-14', 10: '2026-07-23',
-            11: '2026-08-09', 12: '2026-08-04', 13: '2026-08-07', 14: '2026-08-08', 15: '2026-08-25',
-            16: '2026-08-01', 17: '2026-08-17', 18: '2026-08-26', 19: '2026-08-24', 20: '2026-08-27',
-            21: '2026-08-18', 22: '2026-08-12', 23: '2026-08-21', 24: '2026-08-25', 25: '2026-08-28',
-            26: '2026-08-29', 27: '2026-08-22', 28: '2026-08-23', 29: '2026-08-19', 30: '2026-08-10',
-            31: '2026-08-05', 32: '2026-08-08', 33: '2026-08-05', 34: '2026-08-07', 35: '2026-08-09',
-            36: '2026-08-07', 37: '2026-08-11', 38: '2026-08-20', 39: '2026-08-08', 40: '2026-08-24',
-            41: '2026-08-14', 42: '2026-08-06', 43: '2026-08-09', 44: '2026-08-07', 45: '2026-08-20',
-            46: '2026-08-17', 47: '2026-08-18', 48: '2026-08-19', 49: '2026-08-12', 50: '2026-08-13',
-            51: '2026-08-15', 52: '2026-08-17', 53: '2026-08-14', 54: '2026-08-16', 55: '2026-08-14'
-        };
-
-        let savedDates = { ...initialDates };
-        let currentEditingId = null;
-
-        function getStatusClass(dateStr) {
-            if (!dateStr) return 'card-vazio';
-            const date = new Date(dateStr + 'T00:00:00');
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            
-            const diffTime = today - date;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-            if (diffDays > 10) return 'card-vencido'; 
-            if (diffDays > 5) return 'card-alerta';   
-            return 'card-ok';                          
+        let vehicles = JSON.parse(localStorage.getItem('julieta_data')) || [];
+        function saveToStorage() {
+            localStorage.setItem('julieta_data', JSON.stringify(vehicles));
+            renderTable();
         }
-
-        function renderGrid(filter = '') {
-            const grid = document.getElementById('grid-frotas');
-            grid.innerHTML = '';
-
-            for (let i = 1; i <= 55; i++) {
-                const frota = fleetData[i];
-                if (filter && !frota.includes(filter) && i != filter) continue;
-
-                const date = savedDates[i] || '';
-                const statusClass = getStatusClass(date);
-                
-                const card = document.createElement('div');
-                card.className = `${statusClass} p-4 rounded-2xl cursor-pointer transition-all active:scale-95`;
-                card.onclick = () => openModal(i);
-                
-                card.innerHTML = `
-                    <div class="text-xs opacity-70 mb-1">Coluna ${i}</div>
-                    <div class="font-bold text-sm mb-2">${frota}</div>
-                    <div class="text-xs font-mono">${date ? date.split('-').reverse().join('/') : 'Sem data'}</div>
-                `;
-                grid.appendChild(card);
-            }
-        }
-
-        function openModal(id) {
-            currentEditingId = id;
-            document.getElementById('modal-title').innerText = `Coluna ${id} - ${fleetData[id]}`;
-            document.getElementById('date-input').value = savedDates[id] || '';
-            document.getElementById('modal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('modal').classList.add('hidden');
-        }
-
-        function saveDate() {
-            const date = document.getElementById('date-input').value;
-            if (date) {
-                savedDates[currentEditingId] = date;
+        function openModal(index = null) {
+            const modal = document.getElementById('modal');
+            modal.classList.replace('hidden', 'flex');
+            if (index !== null) {
+                document.getElementById('modalTitle').innerText = "Editar Veículo";
+                document.getElementById('editIndex').value = index;
+                document.getElementById('vehicleName').value = vehicles[index].name;
+                document.getElementById('revisionDate').value = vehicles[index].date;
+                document.getElementById('status').value = vehicles[index].status;
             } else {
-                delete savedDates[currentEditingId];
+                document.getElementById('modalTitle').innerText = "Novo Veículo";
+                document.getElementById('vehicleForm').reset();
+                document.getElementById('editIndex').value = "";
             }
-            closeModal();
-            renderGrid(document.getElementById('search').value);
         }
-
-        document.getElementById('search').oninput = (e) => renderGrid(e.target.value);
-        document.getElementById('current-date').innerText = new Date().toLocaleDateString('pt-BR');
-        
-        renderGrid();
-        lucide.createIcons();
+        function closeModal() {
+            document.getElementById('modal').classList.replace('flex', 'hidden');
+        }
+        document.getElementById('vehicleForm').onsubmit = (e) => {
+            e.preventDefault();
+            const index = document.getElementById('editIndex').value;
+            const data = {
+                name: document.getElementById('vehicleName').value,
+                date: document.getElementById('revisionDate').value,
+                status: document.getElementById('status').value
+            };
+            if (index === "") vehicles.push(data); else vehicles[index] = data;
+            saveToStorage();
+            closeModal();
+        };
+        function deleteVehicle(index) {
+            if(confirm("Excluir este veículo?")) { vehicles.splice(index, 1); saveToStorage(); }
+        }
+        function renderTable() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = "";
+            vehicles.forEach((v, index) => {
+                if (v.name.toLowerCase().includes(search)) {
+                    tbody.innerHTML += `<tr class="hover:bg-slate-50 transition"><td class="p-4 font-medium text-slate-800">${v.name}</td><td class="p-4"><span class="px-3 py-1 rounded-full text-xs font-bold status-${v.status}">${v.status.toUpperCase()}</span></td><td class="p-4 text-slate-600 text-sm">${v.date.split('-').reverse().join('/')}</td><td class="p-4 text-right flex justify-end gap-2"><button onclick="openModal(${index})" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"><i data-lucide="edit-3" class="w-4 h-4"></i></button><button onclick="deleteVehicle(${index})" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"><i data-lucide="trash" class="w-4 h-4"></i></button></td></tr>`;
+                }
+            });
+            lucide.createIcons();
+        }
+        function exportData() {
+            const blob = new Blob([JSON.stringify(vehicles)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'julieta_backup.json'; a.click();
+        }
+        function clearAllData() {
+            if(confirm("Apagar tudo?")) { vehicles = []; saveToStorage(); }
+        }
+        window.onload = () => { renderTable(); lucide.createIcons(); };
     </script>
 </body>
 </html>
