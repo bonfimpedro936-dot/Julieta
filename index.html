@@ -9,9 +9,20 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        .status-ok { background-color: #dcfce7; color: #166534; }
-        .status-warning { background-color: #fef9c3; color: #854d0e; }
-        .status-danger { background-color: #fee2e2; color: #991b1b; }
+        .status-ok {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-warning {
+            background-color: #fef9c3;
+            color: #854d0e;
+        }
+
+        .status-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
 
         body {
             -webkit-tap-highlight-color: transparent;
@@ -55,6 +66,7 @@
     <header class="flex justify-between items-center mb-5 bg-white p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-200">
 
         <div class="flex items-center gap-3 min-w-0">
+
             <div class="bg-blue-600 p-2 rounded-lg text-white shrink-0">
                 <i data-lucide="truck"></i>
             </div>
@@ -65,20 +77,35 @@
                     | Gestão de Frotas
                 </span>
             </h1>
+
         </div>
 
         <div class="flex gap-2 shrink-0">
-            <button onclick="exportData()"
+
+            <button
+                onclick="exportData()"
                 class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 bg-slate-200 rounded-lg hover:bg-slate-300 transition">
+
                 <i data-lucide="download" class="w-4 h-4"></i>
-                <span class="hidden sm:inline">Backup</span>
+
+                <span class="hidden sm:inline">
+                    Backup
+                </span>
+
             </button>
 
-            <button onclick="clearAllData()"
+            <button
+                onclick="clearAllData()"
                 class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition">
+
                 <i data-lucide="trash-2" class="w-4 h-4"></i>
-                <span class="hidden sm:inline">Limpar</span>
+
+                <span class="hidden sm:inline">
+                    Limpar
+                </span>
+
             </button>
+
         </div>
 
     </header>
@@ -88,21 +115,29 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
 
         <div class="md:col-span-2 relative">
-            <i data-lucide="search"
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"></i>
+
+            <i
+                data-lucide="search"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5">
+            </i>
 
             <input
                 type="text"
                 id="searchInput"
                 oninput="renderTable()"
-                placeholder="Buscar Julieta ou código..."
+                placeholder="Buscar coluna ou código..."
                 class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm">
+
         </div>
 
-        <button onclick="openModal()"
+        <button
+            onclick="openModal()"
             class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow-md">
+
             <i data-lucide="plus-circle" class="w-5 h-5"></i>
+
             Nova Julieta
+
         </button>
 
     </div>
@@ -110,7 +145,10 @@
 
     <!-- CONTADOR -->
     <div class="mb-3 text-sm text-slate-500 px-1">
-        Total de Julietas: <strong id="totalVehicles">0</strong>
+
+        Total de Julietas:
+        <strong id="totalVehicles">0</strong>
+
     </div>
 
 
@@ -124,6 +162,11 @@
                 <thead class="bg-slate-50 border-b border-slate-200">
 
                     <tr>
+
+                        <th class="p-4 text-sm font-semibold text-slate-600">
+                            Coluna
+                        </th>
+
                         <th class="p-4 text-sm font-semibold text-slate-600">
                             Julieta / Código
                         </th>
@@ -139,11 +182,13 @@
                         <th class="p-4 text-sm font-semibold text-slate-600 text-right">
                             Ações
                         </th>
+
                     </tr>
 
                 </thead>
 
-                <tbody id="tableBody"
+                <tbody
+                    id="tableBody"
                     class="divide-y divide-slate-100">
                 </tbody>
 
@@ -155,39 +200,71 @@
 
 
     <!-- CARDS CELULAR -->
-    <div id="mobileBody" class="mobile-card space-y-3"></div>
-
+    <div
+        id="mobileBody"
+        class="mobile-card space-y-3">
+    </div>
 
 </div>
 
 
 <!-- MODAL -->
-<div id="modal"
+<div
+    id="modal"
     class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50 backdrop-blur-sm">
 
     <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
 
         <div class="p-5 border-b border-slate-100 flex justify-between items-center">
 
-            <h3 id="modalTitle"
+            <h3
+                id="modalTitle"
                 class="text-lg font-bold text-slate-800">
+
                 Nova Julieta
+
             </h3>
 
-            <button onclick="closeModal()"
+            <button
+                onclick="closeModal()"
                 class="text-slate-400 hover:text-slate-600">
+
                 <i data-lucide="x"></i>
+
             </button>
 
         </div>
 
 
-        <form id="vehicleForm" class="p-5 space-y-4">
+        <form
+            id="vehicleForm"
+            class="p-5 space-y-4">
 
-            <input type="hidden" id="editIndex">
+            <input
+                type="hidden"
+                id="editIndex">
 
 
+            <!-- COLUNA -->
             <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-1">
+                    Coluna
+                </label>
+
+                <input
+                    type="number"
+                    id="columnNumber"
+                    min="1"
+                    required
+                    class="w-full p-3 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
+
+            </div>
+
+
+            <!-- CÓDIGO -->
+            <div>
+
                 <label class="block text-sm font-medium text-slate-700 mb-1">
                     Código / Identificação
                 </label>
@@ -197,10 +274,13 @@
                     id="vehicleName"
                     required
                     class="w-full p-3 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
+
             </div>
 
 
+            <!-- DATA -->
             <div>
+
                 <label class="block text-sm font-medium text-slate-700 mb-1">
                     Data que passou
                 </label>
@@ -208,12 +288,14 @@
                 <input
                     type="date"
                     id="revisionDate"
-                    required
                     class="w-full p-3 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
+
             </div>
 
 
+            <!-- STATUS -->
             <div>
+
                 <label class="block text-sm font-medium text-slate-700 mb-1">
                     Status
                 </label>
@@ -245,13 +327,17 @@
                     type="button"
                     onclick="closeModal()"
                     class="flex-1 px-4 py-3 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition">
+
                     Cancelar
+
                 </button>
 
                 <button
                     type="submit"
                     class="flex-1 px-4 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">
+
                     Salvar
+
                 </button>
 
             </div>
@@ -266,73 +352,82 @@
 <script>
 
 /* =========================================================
-   55 JULIETAS + DATAS DO ARQUIVO
+   55 COLUNAS / PARES DA FOTO
    ========================================================= */
 
 const dadosJulietas = [
 
-    ["230001", "2026-07-01"],
-    ["230002", "2026-08-27"],
-    ["230003", "2026-08-03"],
-    ["230004", "2026-08-25"],
-    ["230005", "2026-08-27"],
-    ["230006", "2026-08-30"],
-    ["230007", "2026-07-18"],
-    ["230008", "2026-07-12"],
-    ["230009", "2026-08-14"],
-    ["230010", "2026-07-16"],
-    ["230011", "2026-08-02"],
-    ["230012", "2026-07-08"],
-    ["230013", "2026-07-25"],
-    ["230014", "2026-07-22"],
-    ["230015", "2026-08-23"],
-    ["230016", "2026-07-02"],
-    ["230017", "2026-08-18"],
-    ["230018", "2026-08-11"],
-    ["230019", "2026-07-12"],
-    ["230020", "2026-08-27"],
-    ["230021", "2026-08-27"],
-    ["230022", "2026-08-30"],
-    ["230023", "2026-08-24"],
-    ["230024", "2026-05-24"],
-    ["230025", "2026-08-08"],
-    ["230026", "2026-08-21"],
-    ["230027", "2026-08-14"],
-    ["230028", "2026-08-18"],
-    ["230029", "2026-08-14"],
-    ["230030", "2026-08-21"],
+    [1,  "230001 - 231011", "2026-07-01"],
+    [2,  "230002 - 231006", "2026-08-27"],
+    [3,  "230003 - 231015", "2026-08-03"],
+    [4,  "230004 - 231013", "2026-08-25"],
+    [5,  "230005 - 231014", "2026-08-27"],
+    [6,  "230006 - 231010", "2026-08-30"],
+    [7,  "230007 - 231016", "2026-07-18"],
 
-    ["230031", "2026-07-31"],
-    ["230032", "2026-08-02"],
-    ["230033", "2026-09-04"],
-    ["230034", "2026-08-18"],
-    ["230035", "2026-07-27"],
-    ["230036", "2026-07-21"],
-    ["230037", "2026-07-04"],
-    ["230038", "2026-08-28"],
-    ["230039", "2026-08-11"],
-    ["230040", "2026-08-02"],
-    ["230041", "2026-08-11"],
-    ["230042", "2026-06-15"],
-    ["230043", "2026-08-21"],
-    ["230044", "2026-07-27"],
-    ["230045", "2026-08-21"],
-    ["230046", "2026-05-11"],
-    ["230047", "2026-08-22"],
-    ["230048", "2026-08-29"],
-    ["230049", "2026-07-31"],
-    ["230050", "2026-07-21"],
-    ["230051", "2026-07-31"],
-    ["230052", "2026-05-19"],
-    ["230053", "2026-05-29"],
-    ["230054", "2026-07-03"],
-    ["230055", "2026-08-27"]
+    [8,  "230008 - 231002", "2026-07-12"],
+    [9,  "230009 - 231012", "2026-08-14"],
+    [10, "230010 - 231003", "2026-07-16"],
+    [11, "230011 - 231009", "2026-08-02"],
+    [12, "230012 - 231004", "2026-07-08"],
+
+    [13, "230013 - 231007", "2026-07-25"],
+    [14, "230014 - 231008", "2026-07-22"],
+    [15, "230015 - 231005", "2026-08-23"],
+    [16, "230016 - 231001", "2026-07-02"],
+    [17, "230017 - 231017", "2026-08-18"],
+
+    [18, "230018 - 231026", "2026-08-11"],
+    [19, "230019 - 231024", "2026-07-12"],
+    [20, "230020 - 231027", "2026-08-27"],
+    [21, "230021 - 231018", "2026-08-27"],
+    [22, "230022 - 231020", "2026-08-30"],
+
+    [23, "230023 - 231021", "2026-08-24"],
+    [24, "230024 - 231025", "2026-05-24"],
+    [25, "230025 - 231028", "2026-08-08"],
+    [26, "230026 - 231029", "2026-08-21"],
+    [27, "230027 - 231022", "2026-08-14"],
+
+    [28, "230028 - 231023", "2026-08-18"],
+    [29, "230029 - 231019", "2026-08-14"],
+    [30, "230089 - 231072", ""],
+
+    [31, "230051 - 231050", "2026-07-31"],
+    [32, "230088 - 231074", ""],
+    [33, "230053 - 231051", "2026-05-29"],
+    [34, "230087 - 231073", ""],
+    [35, "230083 - 231069", ""],
+
+    [36, "230082 - 231067", ""],
+    [37, "230084 - 231071", ""],
+    [38, "230077 - 231065", ""],
+    [39, "230076 - 231068", ""],
+    [40, "230046 - 231045", "2026-05-11"],
+
+    [41, "230049 - 231048", "2026-07-31"],
+    [42, "230047 - 231046", "2026-08-22"],
+    [43, "230050 - 231049", "2026-07-21"],
+    [44, "230048 - 231047", "2026-08-29"],
+    [45, "230093 - 231120", ""],
+
+    [46, "230091 - 231077", ""],
+    [47, "230094 - 231078", ""],
+    [48, "230092 - 231079", ""],
+    [49, "230052 - 231052", "2026-05-19"],
+    [50, "230055 - 231053", "2026-08-27"],
+
+    [51, "230127 - 231115", ""],
+    [52, "230126 - 231117", ""],
+    [53, "230125 - 231114", ""],
+    [54, "230128 - 231116", ""],
+    [55, "230054 - 231054", "2026-07-03"]
 
 ];
 
 
 /* =========================================================
-   CARREGA OS DADOS
+   CARREGAR DADOS
    ========================================================= */
 
 let vehicles = JSON.parse(
@@ -341,16 +436,27 @@ let vehicles = JSON.parse(
 
 
 /*
-   Se ainda não existir banco salvo,
-   coloca automaticamente as 55 Julietas.
+   Se o banco antigo existir, usamos os dados novos
+   automaticamente quando ele ainda não tiver a coluna.
 */
 
-if (!vehicles || !Array.isArray(vehicles) || vehicles.length === 0) {
+if (
+    !vehicles ||
+    !Array.isArray(vehicles) ||
+    vehicles.length === 0 ||
+    !vehicles[0].column
+) {
 
     vehicles = dadosJulietas.map(item => ({
-        name: item[0],
-        date: item[1],
+
+        column: item[0],
+
+        name: item[1],
+
+        date: item[2],
+
         status: "ok"
+
     }));
 
     localStorage.setItem(
@@ -381,40 +487,69 @@ function saveToStorage() {
 
 function openModal(index = null) {
 
-    const modal = document.getElementById("modal");
+    const modal =
+        document.getElementById("modal");
 
-    modal.classList.replace("hidden", "flex");
+    modal.classList.replace(
+        "hidden",
+        "flex"
+    );
 
 
     if (index !== null) {
 
-        document.getElementById("modalTitle").innerText =
+        document.getElementById(
+            "modalTitle"
+        ).innerText =
             "Editar Julieta";
 
-        document.getElementById("editIndex").value =
-            index;
 
-        document.getElementById("vehicleName").value =
+        document.getElementById(
+            "editIndex"
+        ).value = index;
+
+
+        document.getElementById(
+            "columnNumber"
+        ).value =
+            vehicles[index].column;
+
+
+        document.getElementById(
+            "vehicleName"
+        ).value =
             vehicles[index].name;
 
-        document.getElementById("revisionDate").value =
+
+        document.getElementById(
+            "revisionDate"
+        ).value =
             vehicles[index].date;
 
-        document.getElementById("status").value =
+
+        document.getElementById(
+            "status"
+        ).value =
             vehicles[index].status;
 
     } else {
 
-        document.getElementById("modalTitle").innerText =
+        document.getElementById(
+            "modalTitle"
+        ).innerText =
             "Nova Julieta";
 
-        document.getElementById("vehicleForm").reset();
 
-        document.getElementById("editIndex").value =
-            "";
+        document.getElementById(
+            "vehicleForm"
+        ).reset();
+
+
+        document.getElementById(
+            "editIndex"
+        ).value = "";
 
     }
-
 }
 
 
@@ -427,7 +562,10 @@ function closeModal() {
     document
         .getElementById("modal")
         .classList
-        .replace("flex", "hidden");
+        .replace(
+            "flex",
+            "hidden"
+        );
 
 }
 
@@ -436,25 +574,42 @@ function closeModal() {
    SALVAR FORMULÁRIO
    ========================================================= */
 
-document.getElementById("vehicleForm").onsubmit = (e) => {
+document.getElementById(
+    "vehicleForm"
+).onsubmit = (e) => {
 
     e.preventDefault();
 
 
     const index =
-        document.getElementById("editIndex").value;
+        document.getElementById(
+            "editIndex"
+        ).value;
 
 
     const data = {
 
+        column:
+            Number(
+                document.getElementById(
+                    "columnNumber"
+                ).value
+            ),
+
         name:
-            document.getElementById("vehicleName").value.trim(),
+            document.getElementById(
+                "vehicleName"
+            ).value.trim(),
 
         date:
-            document.getElementById("revisionDate").value,
+            document.getElementById(
+                "revisionDate"
+            ).value,
 
         status:
-            document.getElementById("status").value
+            document.getElementById(
+                "status"
+            ).value
 
     };
 
@@ -483,9 +638,16 @@ document.getElementById("vehicleForm").onsubmit = (e) => {
 
 function deleteVehicle(index) {
 
-    if (confirm("Excluir esta Julieta?")) {
+    if (
+        confirm(
+            "Excluir esta Julieta?"
+        )
+    ) {
 
-        vehicles.splice(index, 1);
+        vehicles.splice(
+            index,
+            1
+        );
 
         saveToStorage();
 
@@ -500,11 +662,19 @@ function deleteVehicle(index) {
 
 function formatDate(date) {
 
-    if (!date) return "-";
+    if (!date)
+        return "-";
 
-    const parts = date.split("-");
 
-    if (parts.length !== 3) return date;
+    const parts =
+        date.split("-");
+
+
+    if (
+        parts.length !== 3
+    )
+        return date;
+
 
     return `${parts[2]}/${parts[1]}/${parts[0]}`;
 
@@ -517,9 +687,17 @@ function formatDate(date) {
 
 function statusText(status) {
 
-    if (status === "warning") return "ATENÇÃO";
+    if (
+        status === "warning"
+    )
+        return "ATENÇÃO";
 
-    if (status === "danger") return "ATRASADO";
+
+    if (
+        status === "danger"
+    )
+        return "ATRASADO";
+
 
     return "EM DIA";
 
@@ -534,17 +712,24 @@ function renderTable() {
 
     const search =
         document
-            .getElementById("searchInput")
+            .getElementById(
+                "searchInput"
+            )
             .value
             .toLowerCase()
             .trim();
 
 
     const tbody =
-        document.getElementById("tableBody");
+        document.getElementById(
+            "tableBody"
+        );
+
 
     const mobileBody =
-        document.getElementById("mobileBody");
+        document.getElementById(
+            "mobileBody"
+        );
 
 
     tbody.innerHTML = "";
@@ -555,157 +740,213 @@ function renderTable() {
     let quantidade = 0;
 
 
-    vehicles.forEach((v, index) => {
+    vehicles.forEach(
+        (v, index) => {
 
-        const nome =
-            String(v.name || "").toLowerCase();
+            const texto =
+                String(
+                    v.name || ""
+                ).toLowerCase();
 
 
-        if (!nome.includes(search)) {
-            return;
+            const coluna =
+                String(
+                    v.column || ""
+                );
+
+
+            if (
+                !texto.includes(search) &&
+                !coluna.includes(search)
+            ) {
+                return;
+            }
+
+
+            quantidade++;
+
+
+            /* DESKTOP */
+
+            tbody.innerHTML += `
+
+                <tr class="hover:bg-slate-50 transition">
+
+                    <td class="p-4">
+
+                        <div class="inline-flex
+                                    px-3 py-1
+                                    rounded-lg
+                                    bg-blue-50
+                                    text-blue-700
+                                    font-bold
+                                    text-sm">
+
+                            Coluna ${v.column}
+
+                        </div>
+
+                    </td>
+
+
+                    <td class="p-4 font-bold text-slate-800">
+
+                        ${v.name}
+
+                    </td>
+
+
+                    <td class="p-4">
+
+                        <span
+                            class="px-3 py-1 rounded-full text-xs font-bold status-${v.status}">
+
+                            ${statusText(v.status)}
+
+                        </span>
+
+                    </td>
+
+
+                    <td class="p-4 text-slate-600 text-sm font-medium">
+
+                        ${formatDate(v.date)}
+
+                    </td>
+
+
+                    <td class="p-4 text-right">
+
+                        <div class="flex justify-end gap-2">
+
+                            <button
+                                onclick="openModal(${index})"
+                                class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition">
+
+                                <i
+                                    data-lucide="edit-3"
+                                    class="w-4 h-4">
+                                </i>
+
+                            </button>
+
+
+                            <button
+                                onclick="deleteVehicle(${index})"
+                                class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition">
+
+                                <i
+                                    data-lucide="trash"
+                                    class="w-4 h-4">
+                                </i>
+
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+
+            /* CELULAR */
+
+            mobileBody.innerHTML += `
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+
+                    <div class="flex justify-between items-start gap-3">
+
+                        <div>
+
+                            <div class="text-xs text-blue-600 font-bold mb-1">
+
+                                COLUNA ${v.column}
+
+                            </div>
+
+
+                            <div class="text-lg font-bold text-slate-800">
+
+                                ${v.name}
+
+                            </div>
+
+                        </div>
+
+
+                        <span
+                            class="px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap status-${v.status}">
+
+                            ${statusText(v.status)}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+
+                        <div>
+
+                            <div class="text-xs text-slate-400">
+
+                                DATA QUE PASSOU
+
+                            </div>
+
+
+                            <div class="font-semibold text-slate-700">
+
+                                ${formatDate(v.date)}
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="flex gap-2">
+
+                            <button
+                                onclick="openModal(${index})"
+                                class="p-2.5 text-blue-600 bg-blue-50 rounded-xl">
+
+                                <i
+                                    data-lucide="edit-3"
+                                    class="w-5 h-5">
+                                </i>
+
+                            </button>
+
+
+                            <button
+                                onclick="deleteVehicle(${index})"
+                                class="p-2.5 text-red-600 bg-red-50 rounded-xl">
+
+                                <i
+                                    data-lucide="trash"
+                                    class="w-5 h-5">
+                                </i>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
         }
+    );
 
 
-        quantidade++;
-
-
-        /* DESKTOP */
-
-        tbody.innerHTML += `
-
-            <tr class="hover:bg-slate-50 transition">
-
-                <td class="p-4 font-bold text-slate-800">
-                    ${v.name}
-                </td>
-
-
-                <td class="p-4">
-
-                    <span
-                        class="px-3 py-1 rounded-full text-xs font-bold status-${v.status}">
-                        ${statusText(v.status)}
-                    </span>
-
-                </td>
-
-
-                <td class="p-4 text-slate-600 text-sm font-medium">
-
-                    ${formatDate(v.date)}
-
-                </td>
-
-
-                <td class="p-4 text-right">
-
-                    <div class="flex justify-end gap-2">
-
-                        <button
-                            onclick="openModal(${index})"
-                            class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition">
-
-                            <i data-lucide="edit-3"
-                               class="w-4 h-4"></i>
-
-                        </button>
-
-
-                        <button
-                            onclick="deleteVehicle(${index})"
-                            class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition">
-
-                            <i data-lucide="trash"
-                               class="w-4 h-4"></i>
-
-                        </button>
-
-                    </div>
-
-                </td>
-
-            </tr>
-
-        `;
-
-
-        /* CELULAR */
-
-        mobileBody.innerHTML += `
-
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-
-                <div class="flex justify-between items-start gap-3">
-
-                    <div>
-
-                        <div class="text-xs text-slate-400 font-medium mb-1">
-                            JULIETA
-                        </div>
-
-                        <div class="text-lg font-bold text-slate-800">
-                            ${v.name}
-                        </div>
-
-                    </div>
-
-
-                    <span
-                        class="px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap status-${v.status}">
-                        ${statusText(v.status)}
-                    </span>
-
-                </div>
-
-
-                <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
-
-                    <div>
-
-                        <div class="text-xs text-slate-400">
-                            DATA QUE PASSOU
-                        </div>
-
-                        <div class="font-semibold text-slate-700">
-                            ${formatDate(v.date)}
-                        </div>
-
-                    </div>
-
-
-                    <div class="flex gap-2">
-
-                        <button
-                            onclick="openModal(${index})"
-                            class="p-2.5 text-blue-600 bg-blue-50 rounded-xl">
-
-                            <i data-lucide="edit-3"
-                               class="w-5 h-5"></i>
-
-                        </button>
-
-
-                        <button
-                            onclick="deleteVehicle(${index})"
-                            class="p-2.5 text-red-600 bg-red-50 rounded-xl">
-
-                            <i data-lucide="trash"
-                               class="w-5 h-5"></i>
-
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        `;
-
-    });
-
-
-    document.getElementById("totalVehicles").innerText =
+    document.getElementById(
+        "totalVehicles"
+    ).innerText =
         quantidade;
 
 
@@ -720,21 +961,36 @@ function renderTable() {
 
 function exportData() {
 
-    const blob = new Blob(
-        [JSON.stringify(vehicles, null, 2)],
-        { type: "application/json" }
-    );
+    const blob =
+        new Blob(
+            [
+                JSON.stringify(
+                    vehicles,
+                    null,
+                    2
+                )
+            ],
+            {
+                type:
+                    "application/json"
+            }
+        );
 
 
     const url =
-        URL.createObjectURL(blob);
+        URL.createObjectURL(
+            blob
+        );
 
 
     const a =
-        document.createElement("a");
+        document.createElement(
+            "a"
+        );
 
 
     a.href = url;
+
 
     a.download =
         "julieta_backup.json";
@@ -757,7 +1013,11 @@ function exportData() {
 
 function clearAllData() {
 
-    if (confirm("Apagar todas as Julietas?")) {
+    if (
+        confirm(
+            "Apagar todas as Julietas?"
+        )
+    ) {
 
         vehicles = [];
 
