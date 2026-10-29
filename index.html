@@ -69,6 +69,15 @@ body{
 
 <body class="bg-slate-100 min-h-screen font-sans">
 
+<div id="loginScreen" style="position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:#f1f5f9;padding:1rem;">
+    <div style="background:#ffffff;border-radius:1rem;padding:2rem 1.5rem;text-align:center;box-shadow:0 10px 25px rgba(0,0,0,.1);max-width:24rem;width:100%;">
+        <h2 style="font-size:1.25rem;font-weight:700;color:#1e293b;margin-bottom:.5rem;">Julieta App</h2>
+        <p style="color:#64748b;font-size:.875rem;margin-bottom:1.5rem;">Entre com sua conta Google para acessar os dados.</p>
+        <button onclick="entrarComGoogle()" style="width:100%;padding:.75rem 1rem;background:#2563eb;color:#ffffff;font-weight:700;border:none;border-radius:.75rem;cursor:pointer;">Entrar com Google</button>
+    </div>
+</div>
+
+
 <div class="max-w-7xl mx-auto p-3 sm:p-4">
 
 <header class="flex justify-between items-center mb-5 bg-white p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-200">
@@ -527,12 +536,46 @@ let firebasePronto = false;
 
 
 /* =========================================================
-   INICIALIZAÇÃO
+   LOGIN COM GOOGLE
    ========================================================= */
 
-auth.signInAnonymously()
+const googleProvider =
+    new firebase.auth.GoogleAuthProvider();
 
-.then(async () => {
+let appIniciado = false;
+
+
+function entrarComGoogle() {
+
+    auth.signInWithRedirect(googleProvider)
+
+    .catch(erro => {
+
+        console.error(erro);
+
+        alert(
+            "Não foi possível entrar com o Google. " +
+            erro.message
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   CARREGAR DADOS (somente depois do login)
+   ========================================================= */
+
+async function iniciarApp() {
+
+    if (appIniciado) {
+
+        return;
+
+    }
+
+    appIniciado = true;
 
     try {
 
@@ -618,9 +661,6 @@ auth.signInAnonymously()
 
         /*
          SINCRONIZAÇÃO EM TEMPO REAL
-
-         Se mudar em um aparelho,
-         os outros recebem automaticamente.
         */
 
         dadosRef.on("value", snapshot => {
@@ -659,6 +699,8 @@ auth.signInAnonymously()
 
     } catch (erro) {
 
+        appIniciado = false;
+
         console.error(erro);
 
         alert(
@@ -667,17 +709,31 @@ auth.signInAnonymously()
 
     }
 
-})
+}
 
 
-.catch(erro => {
+/* =========================================================
+   CONTROLE DE LOGIN
+   Só libera o app para conta Google.
+   Usuário anônimo é tratado como não logado.
+   ========================================================= */
 
-    console.error(erro);
+auth.onAuthStateChanged(user => {
 
-    alert(
-        "Não foi possível conectar ao Firebase. " +
-        "Verifique a internet e as regras do Realtime Database."
-    );
+    const telaLogin =
+        document.getElementById("loginScreen");
+
+    if (user && !user.isAnonymous) {
+
+        telaLogin.style.display = "none";
+
+        iniciarApp();
+
+    } else {
+
+        telaLogin.style.display = "flex";
+
+    }
 
 });
 
